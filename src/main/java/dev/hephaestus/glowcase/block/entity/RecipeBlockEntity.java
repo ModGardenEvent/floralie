@@ -1,16 +1,19 @@
 package dev.hephaestus.glowcase.block.entity;
 
-import dev.hephaestus.glowcase.client.GlowcaseClient;
-import dev.hephaestus.glowcase.client.util.EmiClientUtils;
-
+import de.crafty.eiv.common.overlay.ItemViewOverlay;
 import dev.hephaestus.glowcase.Glowcase;
+import dev.hephaestus.glowcase.client.GlowcaseClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.Optional;
 
 public class RecipeBlockEntity extends GlowcaseBlockEntity {
 	public String recipe = "diamond_sword";
@@ -26,8 +29,12 @@ public class RecipeBlockEntity extends GlowcaseBlockEntity {
 	@Environment(EnvType.CLIENT)
 	public void openRecipe() {
 		Identifier rid = Identifier.tryParse(recipe);
-		if (GlowcaseClient.EMI_LOADED) {
-			EmiClientUtils.displayRecipe(rid);
+//		if (GlowcaseClient.EMI_LOADED) {
+//			EmiClientUtils.displayRecipe(rid);
+//		}
+		if (GlowcaseClient.EIV_LOADED) {
+			ItemStack itemStack = Registries.ITEM.get(rid).getDefaultStack();
+			ItemViewOverlay.INSTANCE.openRecipeView(itemStack, ItemViewOverlay.ItemViewOpenType.RESULT);
 		}
 	}
 
@@ -50,9 +57,13 @@ public class RecipeBlockEntity extends GlowcaseBlockEntity {
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		this.recipe = tag.getString("recipe");
-		this.zOffset = TextBlockEntity.ZOffset.valueOf(tag.getString("z_offset"));
-		this.rotationX = tag.contains("rotationX") ? tag.getFloat("rotationX") : 0f;
-		this.rotationY = tag.contains("rotationY") ? tag.getFloat("rotationY") : 0f;
+		tag.getString("recipe")
+			.ifPresent(s -> this.recipe = s);
+		tag.getString("z_offset")
+			.ifPresent(s -> this.zOffset = TextBlockEntity.ZOffset.valueOf(s));
+		tag.getFloat("rotationX")
+			.ifPresent(f -> this.rotationX = f);
+		tag.getFloat("rotationY")
+			.ifPresent(f -> this.rotationY = f);
 	}
 }

@@ -15,7 +15,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -33,7 +34,7 @@ import java.util.List;
 
 public class ItemProviderBlock extends StackInteractableBlock {
 	public static final MapCodec<ItemProviderBlock> CODEC = createCodec(ItemProviderBlock::new);
-	public static final DirectionProperty FACING = Properties.FACING;
+	public static final EnumProperty<Direction> FACING = Properties.FACING;
 
 	public ItemProviderBlock() {
 		this(defaultSettings());
@@ -81,13 +82,6 @@ public class ItemProviderBlock extends StackInteractableBlock {
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new ItemProviderBlockEntity(pos, state);
-	}
-
-	@Override
-	public void appendTooltip(ItemStack itemStack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.item_provider_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.item_provider_block.tooltip.1").formatted(Formatting.DARK_GRAY));
-		tooltip.add(Text.translatable("block.glowcase.item_provider_block.tooltip.2").formatted(Formatting.DARK_GRAY));
 	}
 
 	@Override

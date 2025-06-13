@@ -84,20 +84,6 @@ public class CollectionCaseItem extends Item implements ScrollableItem {
 		}
 	}
 
-	@Override
-	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-		CollectionComponent collection = stack.get(Glowcase.COLLECTION_COMPONENT.get());
-		tooltip.add(Text.translatable("item.glowcase.collection_case.tooltip.0").formatted(Formatting.GRAY));
-		if (type.isCreative()) tooltip.add(Text.translatable("item.glowcase.collection_case.tooltip.creative.0").formatted(Formatting.DARK_GRAY));
-		if (collection != null && !collection.collectables().isEmpty()) {
-			tooltip.add(Text.translatable("item.glowcase.collection_case.tooltip.1", collection.collected(), collection.collectables().size()).formatted(Formatting.DARK_PURPLE));
-			for (int i = 0; i < collection.collectables().size(); i++) {
-				CollectableStack collectable = collection.collectables().get(i);
-				tooltip.add(collectable.getCollectableName(context.getRegistryLookup(), collection.selected() == i));
-			}
-		}
-	}
-
 	private void playScrollSound(Entity entity) {
 		entity.playSound(SoundEvents.BLOCK_LEVER_CLICK, 0.2F, 1.2F);
 	}

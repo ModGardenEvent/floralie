@@ -18,6 +18,13 @@ repositories {
 		name = 'BlameJared Maven (CrT / Bookshelf)'
 		url = 'https://maven.blamejared.com'
 	}
+	
+	exclusiveContent {
+		forRepository {
+			maven { url "https://api.modrinth.com/maven" }
+		}
+		filter { includeGroup "maven.modrinth" }
+	}
 }
 
 dependencies {
@@ -36,8 +43,11 @@ dependencies {
 	implementation libs.kaleidoConfig
 	include libs.kaleidoConfig
 
-	modCompileOnly libs.emi
-	modLocalRuntime libs.emi
+//	modCompileOnly libs.emi
+//	modLocalRuntime libs.emi
+	
+	modCompileOnly libs.eiv
+	modLocalRuntime libs.eiv
 
 	modCompileOnly libs.modmenu
 	modLocalRuntime libs.modmenu

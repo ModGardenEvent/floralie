@@ -70,12 +70,6 @@ public class RecipeBlock extends RotatableBlock {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack itemStack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.recipe_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.generic.tooltip").formatted(Formatting.DARK_GRAY));
-	}
-
-	@Override
 	public VoxelShape targetedOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (!(world.getBlockEntity(pos) instanceof RecipeBlockEntity be)) return VoxelShapes.empty();
 		float rotation = -(state.get(Properties.ROTATION) * 360) / 16.0F;

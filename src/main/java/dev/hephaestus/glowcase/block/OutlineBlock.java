@@ -41,12 +41,6 @@ public class OutlineBlock extends WaterloggableGlowcaseBlock {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack itemStack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.outline_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.generic.tooltip").formatted(Formatting.DARK_GRAY));
-	}
-
-	@Override
 	protected MapCodec<? extends BlockWithEntity> getCodec() {
 		return CODEC;
 	}

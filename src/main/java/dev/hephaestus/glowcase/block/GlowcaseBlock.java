@@ -15,8 +15,9 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -63,9 +64,9 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!(world.getBlockEntity(pos) instanceof GlowcaseBlockEntity)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		}
 
 		if (player.getStackInHand(hand).isIn(Glowcase.ITEM_TAG) && canEditGlowcase(player, pos)) {
@@ -73,10 +74,10 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 				openEditScreen(pos);
 			}
 
-			return ItemActionResult.SUCCESS;
+			return ActionResult.SUCCESS;
 		}
 
-		return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 	}
 
 	@Override
@@ -101,7 +102,7 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 	}
 
 	public static boolean canEditGlowcase(PlayerEntity player, BlockPos pos) {
-		return player != null && player.isCreative() && player.canModifyAt(player.getWorld(), pos);
+		return player != null && player.isCreative() && player.canModifyAt((ServerWorld) player.getWorld(), pos);
 	}
 
 	protected static AbstractBlock.Settings defaultSettings() {

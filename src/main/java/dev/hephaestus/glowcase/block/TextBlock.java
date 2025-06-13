@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -23,6 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TextBlock extends RotatableBlock {
 	public static final MapCodec<TextBlock> CODEC = createCodec(TextBlock::new);
@@ -58,22 +60,6 @@ public class TextBlock extends RotatableBlock {
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new TextBlockEntity(pos, state);
-	}
-
-	@Override
-	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.text_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.generic.tooltip").formatted(Formatting.DARK_GRAY));
-		tooltip.add(Text.translatable("block.glowcase.text_block.tooltip.1").formatted(Formatting.DARK_GRAY));
-		NbtComponent component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
-		if (component == null) return;
-		NbtCompound nbt = component.getNbt();
-		if (nbt == null) return;
-		for (NbtElement element : nbt.getList("lines", NbtElement.STRING_TYPE)) {
-			if (element instanceof NbtString line && !line.asString().isBlank()) {
-				tooltip.add(Text.literal((line.asString().length() > 20 ? "%s...\"" : "%s").formatted(line.asString().substring(0, Math.min(line.asString().length(), 20)))).formatted(Formatting.DARK_PURPLE));
-			}
-		}
 	}
 
 	@Override

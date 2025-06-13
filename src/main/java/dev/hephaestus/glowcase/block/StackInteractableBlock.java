@@ -8,7 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,8 +34,8 @@ public abstract class StackInteractableBlock extends WaterloggableGlowcaseBlock 
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!(world.getBlockEntity(pos) instanceof StackInteractable be)) return ItemActionResult.CONSUME;
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (!(world.getBlockEntity(pos) instanceof StackInteractable be)) return ActionResult.CONSUME;
 
 		if (canEditGlowcase(player, pos)) {
 			boolean holdingGlowcaseItem = stack.isIn(Glowcase.ITEM_TAG);
@@ -43,16 +43,16 @@ public abstract class StackInteractableBlock extends WaterloggableGlowcaseBlock 
 
 			if (be.matchesStack(ItemStack.EMPTY)) {
 				if (!world.isClient) be.setFromStack(stack);
-				return ItemActionResult.SUCCESS;
+				return ActionResult.SUCCESS;
 			} else if (holdingSameAsDisplay) {
 				if (world.isClient) openEditScreen(pos);
-				return ItemActionResult.SUCCESS;
+				return ActionResult.SUCCESS;
 			} else if (holdingGlowcaseItem) {
 				if (!world.isClient) be.unsetFromStack();
-				return ItemActionResult.SUCCESS;
+				return ActionResult.SUCCESS;
 			}
 		}
 
-		return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return ActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 }

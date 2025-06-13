@@ -1,18 +1,19 @@
 [versions]
-loom = "1.7.+"
+loom = "1.10.+"
 minotaur = "2.+"
 
 kaleidoConfig = "0.3.1+1.3.2"
 
-mc = "1.21.1"
-fl = "0.16.10"
-yarn = "1.21.1+build.3"
-fapi = "0.115.4+1.21.1"
+mc = "1.21.5"
+fl = "0.16.14"
+yarn = "1.21.5+build.1"
+fapi = "0.126.0+1.21.5"
 
-placeholder = "2.4.0+1.21"
-polydex = "1.2.2+1.21"
-emi = "1.1.19+1.21.1"
-modmenu = "11.0.3"
+placeholder = "2.6.4+1.21.5"
+polydex = "1.5.0+1.21.5-rc2"
+#emi = "1.1.19+1.21.1"
+eiv = "2.3.2+1.21.5"
+modmenu = "14.0.0-rc.2"
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }
@@ -28,5 +29,6 @@ placeholder = { group = "eu.pb4", name = "placeholder-api", version.ref = "place
 polydex = { group = "eu.pb4", name = "polydex", version.ref = "polydex" }
 kaleidoConfig = { group = "folk.sisby", name = "kaleido-config", version.ref = "kaleidoConfig" }
 
-emi = { group = "dev.emi", name = "emi-fabric", version.ref = "emi" }
+#emi = { group = "dev.emi", name = "emi-fabric", version.ref = "emi" }
+eiv = { group = "maven.modrinth", name = "eiv", version.ref = "eiv" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }

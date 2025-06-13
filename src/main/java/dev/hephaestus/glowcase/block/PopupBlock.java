@@ -66,13 +66,6 @@ public class PopupBlock extends WaterloggableGlowcaseBlock {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack itemStack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.popup_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.generic.tooltip").formatted(Formatting.DARK_GRAY));
-		tooltip.add(Text.translatable("block.glowcase.popup_block.tooltip.1").formatted(Formatting.DARK_GRAY));
-	}
-
-	@Override
 	protected MapCodec<? extends BlockWithEntity> getCodec() {
 		return CODEC;
 	}

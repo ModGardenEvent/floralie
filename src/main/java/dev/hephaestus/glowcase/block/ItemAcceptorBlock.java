@@ -22,13 +22,12 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,6 +36,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -44,7 +45,7 @@ import java.util.List;
 public class ItemAcceptorBlock extends GlowcaseBlock {
 	public static final MapCodec<ItemAcceptorBlock> CODEC = createCodec(ItemAcceptorBlock::new);
 	private static final VoxelShape OUTLINE = VoxelShapes.fullCube();
-	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+	public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 
 	public ItemAcceptorBlock() {
@@ -94,17 +95,17 @@ public class ItemAcceptorBlock extends GlowcaseBlock {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (!(world.getBlockEntity(pos) instanceof ItemAcceptorBlockEntity be)) {
-			return ItemActionResult.CONSUME;
+			return ActionResult.CONSUME;
 		}
 
 		if (!be.isItemAccepted(stack)) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 		}
 
 		if (world.getBlockTickScheduler().isQueued(pos, this) || state.get(POWERED)) {
-			return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+			return ActionResult.PASS;
 		}
 
 		if (!world.isClient()) {
@@ -120,7 +121,7 @@ public class ItemAcceptorBlock extends GlowcaseBlock {
 			// Schedule redstone pulse
 			if (be.getPulse() > 0) world.scheduleBlockTick(pos, this, 2);
 		}
-		return ItemActionResult.SUCCESS;
+		return ActionResult.SUCCESS;
 	}
 
 	private static Inventory getInventoryAt(World world, BlockPos pos) {
@@ -179,9 +180,13 @@ public class ItemAcceptorBlock extends GlowcaseBlock {
 
 	protected void updateNeighbors(World world, BlockPos pos, BlockState state) {
 		Direction direction = getOutputDirection(world, pos, state);
-		BlockPos blockPos = pos.offset(direction);
-		world.updateNeighbor(blockPos, this, pos);
-		world.updateNeighborsExcept(blockPos, this, direction.getOpposite());
+		WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(
+			world,
+			direction,
+			null
+		);
+		world.updateNeighbor(pos, this, wireOrientation);
+		world.updateNeighborsExcept(pos, this, direction.getOpposite(), wireOrientation);
 	}
 
 	@Override
@@ -220,14 +225,6 @@ public class ItemAcceptorBlock extends GlowcaseBlock {
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return OUTLINE;
-	}
-
-	@Override
-	public void appendTooltip(ItemStack itemStack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.item_acceptor_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.item_acceptor_block.tooltip.1").formatted(Formatting.BLUE));
-		tooltip.add(Text.translatable("block.glowcase.item_acceptor_block.tooltip.2").formatted(Formatting.BLUE));
-		tooltip.add(Text.translatable("block.glowcase.item_acceptor_block.tooltip.3").formatted(Formatting.DARK_GRAY));
 	}
 
 	@Override

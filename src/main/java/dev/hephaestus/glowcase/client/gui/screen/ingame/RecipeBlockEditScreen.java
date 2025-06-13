@@ -6,14 +6,11 @@ import dev.hephaestus.glowcase.block.entity.RecipeBlockEntity;
 import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.GlowcaseClient;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.SuggestionListWidget;
-import dev.hephaestus.glowcase.client.util.EmiClientUtils;
 import dev.hephaestus.glowcase.packet.C2SEditRecipeBlock;
-import dev.hephaestus.glowcase.util.EmiUtils;
 import dev.hephaestus.glowcase.util.RequiresEmiLoaded;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -102,9 +99,9 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 			}
 
 			if (GlowcaseClient.EMI_LOADED) {
-				suggestionWidget.updateSuggestions(EmiUtils.RECIPE_LIST.get(), text, false);
+//				suggestionWidget.updateSuggestions(EmiUtils.RECIPE_LIST.get(), text, false);
 
-				EmiClientUtils.updateWidgetHolder(recipeWidget.getText(), glowcaseWidgetHolder);
+//				EmiClientUtils.updateWidgetHolder(recipeWidget.getText(), glowcaseWidgetHolder);
 			}
 		});
 
@@ -114,7 +111,7 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 		this.addDrawableChild(this.zOffsetToggle);
 
 		if (GlowcaseClient.EMI_LOADED && glowcaseWidgetHolder.get() == null) {
-			EmiClientUtils.updateWidgetHolder(recipeWidget.getText(), glowcaseWidgetHolder);
+//			EmiClientUtils.updateWidgetHolder(recipeWidget.getText(), glowcaseWidgetHolder);
 		}
 	}
 
@@ -154,23 +151,23 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 		// render the list over everything
 		suggestionWidget.renderWidget(context, mouseX, mouseY, delta);
 
-		if (GlowcaseClient.EMI_LOADED && glowcaseWidgetHolder.get() != null) {
-			int baseYForRecipe = (baseY + fontHeight + 95);
-			int spaceForRecipe = height - baseYForRecipe;
-
-			RequiresEmiLoaded widgetHolder = glowcaseWidgetHolder.get();
-
-			int holderWidth = EmiClientUtils.getHolderWidth(widgetHolder);
-			int holderHeight = EmiClientUtils.getHolderHeight(widgetHolder);
-
-			MatrixStack matrixStack = context.getMatrices();
-			matrixStack.push();
-			matrixStack.translate(width / 2f - holderWidth / 2f, baseYForRecipe + spaceForRecipe / 2f - holderHeight / 2f, 0);
-
-			EmiClientUtils.renderEmiRecipe(widgetHolder, context, delta);
-
-			matrixStack.pop();
-		}
+//		if (GlowcaseClient.EMI_LOADED && glowcaseWidgetHolder.get() != null) {
+//			int baseYForRecipe = (baseY + fontHeight + 95);
+//			int spaceForRecipe = height - baseYForRecipe;
+//
+//			RequiresEmiLoaded widgetHolder = glowcaseWidgetHolder.get();
+//
+//			int holderWidth = EmiClientUtils.getHolderWidth(widgetHolder);
+//			int holderHeight = EmiClientUtils.getHolderHeight(widgetHolder);
+//
+//			MatrixStack matrixStack = context.getMatrices();
+//			matrixStack.push();
+//			matrixStack.translate(width / 2f - holderWidth / 2f, baseYForRecipe + spaceForRecipe / 2f - holderHeight / 2f, 0);
+//
+//			EmiClientUtils.renderEmiRecipe(widgetHolder, context, delta);
+//
+//			matrixStack.pop();
+//		}
 	}
 
 	@Override

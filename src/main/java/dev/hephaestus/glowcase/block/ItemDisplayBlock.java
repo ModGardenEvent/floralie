@@ -52,13 +52,6 @@ public class ItemDisplayBlock extends StackInteractableBlock {
 	}
 
 	@Override
-	public void appendTooltip(ItemStack itemStack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-		tooltip.add(Text.translatable("block.glowcase.item_display_block.tooltip.0").formatted(Formatting.GRAY));
-		tooltip.add(Text.translatable("block.glowcase.item_display_block.tooltip.1").formatted(Formatting.DARK_GRAY));
-		tooltip.add(Text.translatable("block.glowcase.item_display_block.tooltip.2").formatted(Formatting.DARK_GRAY));
-	}
-
-	@Override
 	protected MapCodec<? extends BlockWithEntity> getCodec() {
 		return CODEC;
 	}
