@@ -1,6 +1,5 @@
 package dev.hephaestus.glowcase.block.entity;
 
-import dev.hephaestus.glowcase.client.render.block.entity.BakedBlockEntityRenderer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -38,9 +37,9 @@ public class GlowcaseBlockEntity extends BlockEntity {
 	@SuppressWarnings({"MethodCallSideOnly", "VariableUseSideOnly"})
 	@Override
 	public void markRemoved() {
-		if (world != null && world.isClient) {
-			BakedBlockEntityRenderer.Manager.markForRebuild(getPos());
-		}
+//		if (world != null && world.isClient) {
+//			BakedBlockEntityRenderer.Manager.markForRebuild(getPos());
+//		}
 		super.markRemoved();
 	}
 }

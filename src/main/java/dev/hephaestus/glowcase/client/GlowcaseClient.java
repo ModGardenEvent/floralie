@@ -3,7 +3,6 @@ package dev.hephaestus.glowcase.client;
 import java.util.Stack;
 
 import dev.hephaestus.glowcase.Glowcase;
-import dev.hephaestus.glowcase.client.render.block.entity.BakedBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.ConfigLinkBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.EntityDisplayBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.HyperlinkBlockEntityRenderer;
@@ -17,7 +16,7 @@ import dev.hephaestus.glowcase.client.render.block.entity.RecipeBlockEntityRende
 import dev.hephaestus.glowcase.client.render.block.entity.ScreenBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.SoundPlayerBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.SpriteBlockEntityRenderer;
-import dev.hephaestus.glowcase.client.render.block.entity.TextBlockEntityRenderer;
+import dev.hephaestus.glowcase.client.render.block.entity.TextBlockEntityRendererNewfangled;
 import dev.hephaestus.glowcase.client.render.item.ItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.NoteItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.TabletItemHandRenderer;
@@ -28,8 +27,6 @@ import dev.hephaestus.glowcase.packet.C2SSlotScrolled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -56,7 +53,7 @@ public class GlowcaseClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Glowcase.proxy = new GlowcaseClientProxy();
 
-		BlockEntityRendererFactories.register(Glowcase.TEXT_BLOCK_ENTITY.get(), TextBlockEntityRenderer::new);
+		BlockEntityRendererFactories.register(Glowcase.TEXT_BLOCK_ENTITY.get(), TextBlockEntityRendererNewfangled::new);
 		BlockEntityRendererFactories.register(Glowcase.HYPERLINK_BLOCK_ENTITY.get(), HyperlinkBlockEntityRenderer::new);
 		BlockEntityRendererFactories.register(Glowcase.CONFIG_LINK_BLOCK_ENTITY.get(), ConfigLinkBlockEntityRenderer::new);
 		BlockEntityRendererFactories.register(Glowcase.ITEM_DISPLAY_BLOCK_ENTITY.get(), ItemDisplayBlockEntityRenderer::new);
@@ -104,8 +101,9 @@ public class GlowcaseClient implements ClientModInitializer {
 //			Glowcase.COLLECTION_CASE_ITEM.get()
 //		);
 
-		WorldRenderEvents.AFTER_ENTITIES.register(BakedBlockEntityRenderer.Manager::render);
-		InvalidateRenderStateCallback.EVENT.register(BakedBlockEntityRenderer.Manager::reset);
+		// get rid of this BER nobody likes it
+//		WorldRenderEvents.AFTER_ENTITIES.register(BakedBlockEntityRenderer.Manager::render);
+//		InvalidateRenderStateCallback.EVENT.register(BakedBlockEntityRenderer.Manager::reset);
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new NoteTextColorResource());
 

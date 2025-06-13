@@ -14,13 +14,13 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -29,14 +29,14 @@ public record ItemAcceptorBlockEntityRenderer(BlockEntityRendererFactory.Context
 	private static final Quaternionf ITEM_LIGHT_ROTATION_3D = RotationAxis.POSITIVE_X.rotationDegrees(-15).mul(RotationAxis.POSITIVE_Y.rotationDegrees(15));
 	private static final Quaternionf ITEM_LIGHT_ROTATION_FLAT = RotationAxis.POSITIVE_X.rotationDegrees(-45);
 
-	public void render(ItemAcceptorBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+	@Override
+	public void render(ItemAcceptorBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		Entity camera = MinecraftClient.getInstance().getCameraEntity();
 
 		if (camera == null) return;
 
 		ItemRenderer itemRenderer = context.getItemRenderer();
-		BakedModel itemModel = itemRenderer.getModel(entity.getDisplayItemStack(), entity.getWorld(), null, 0);
 
 		// Render item
 		float yaw = 0;
@@ -52,15 +52,10 @@ public record ItemAcceptorBlockEntityRenderer(BlockEntityRendererFactory.Context
 		Vector3f[] lights = new Vector3f[2];
 		System.arraycopy(RenderSystemAccessor.getShaderLightDirections(), 0, lights, 0, 2);
 
-		if (itemModel.isSideLit()) {
-			matrices.peek().getNormalMatrix().rotate(ITEM_LIGHT_ROTATION_3D);
-			DiffuseLighting.enableGuiDepthLighting();
-		} else {
-			matrices.peek().getNormalMatrix().rotate(ITEM_LIGHT_ROTATION_FLAT);
-			DiffuseLighting.disableGuiDepthLighting();
-		}
+		matrices.peek().getNormalMatrix().rotate(ITEM_LIGHT_ROTATION_FLAT);
+		DiffuseLighting.disableGuiDepthLighting();
 
-		itemRenderer.renderItem(entity.getDisplayItemStack(), ModelTransformationMode.GUI, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 0);
+		itemRenderer.renderItem(entity.getDisplayItemStack(), ItemDisplayContext.GUI, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 0);
 
 		System.arraycopy(lights, 0, RenderSystemAccessor.getShaderLightDirections(), 0, 2);
 
@@ -79,6 +74,6 @@ public record ItemAcceptorBlockEntityRenderer(BlockEntityRendererFactory.Context
 	}
 
 	private static float getRotationYForSide2D(Direction side) {
-		return -side.asRotation() * (float) Math.PI / 180f;
+		return -side.getPositiveHorizontalDegrees() * (float) Math.PI / 180f;
 	}
 }

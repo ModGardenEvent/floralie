@@ -8,17 +8,19 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 public record EntityDisplayBlockEntityRenderer(BlockEntityRendererFactory.Context context) implements BlockEntityRenderer<EntityDisplayBlockEntity> {
 	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/entity_display_block.png");
 
 	@Override
-	public void render(EntityDisplayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+	public void render(EntityDisplayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		Entity camera = MinecraftClient.getInstance().getCameraEntity();
 
@@ -32,8 +34,18 @@ public record EntityDisplayBlockEntityRenderer(BlockEntityRendererFactory.Contex
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.getPitch()));
 		Entity renderEntity = entity.getDisplayEntity();
 		if (renderEntity != null) {
-			EntityRenderer<? super Entity> entityRenderer = context.getEntityRenderDispatcher().getRenderer(renderEntity);
-			entityRenderer.render(renderEntity, 0, 0, matrices, vertexConsumers, light);
+			EntityRenderer<? super Entity, ?> entityRenderer = context.getEntityRenderDispatcher().getRenderer(renderEntity);
+			EntityRenderState renderState = entityRenderer.getAndUpdateRenderState(renderEntity, tickDelta);
+			// please don't crash
+			MinecraftClient.getInstance().getEntityRenderDispatcher().render(
+				renderState,
+				0.0,
+				0.0,
+				0.0,
+				matrices,
+				vertexConsumers,
+				light
+			);
 		}
 
 		matrices.pop();

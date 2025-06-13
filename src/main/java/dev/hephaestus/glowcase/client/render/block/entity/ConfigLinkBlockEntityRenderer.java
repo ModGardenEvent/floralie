@@ -14,12 +14,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 public record ConfigLinkBlockEntityRenderer(
 	BlockEntityRendererFactory.Context context) implements BlockEntityRenderer<ConfigLinkBlockEntity> {
 	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/config_link_block.png");
 
-	public void render(ConfigLinkBlockEntity entity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+	public void render(ConfigLinkBlockEntity entity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+		// this is literally HyperlinkBlockEntityRenderer with extra steps
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		Camera camera = context.getRenderDispatcher().camera;
 		BlockEntityRenderUtil.renderBillboardPlaceholder(entity, ITEM_TEXTURE, 0.5F, matrices, vertexConsumers, camera);

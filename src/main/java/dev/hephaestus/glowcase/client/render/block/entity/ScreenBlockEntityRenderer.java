@@ -38,7 +38,7 @@ public record ScreenBlockEntityRenderer(BlockEntityRendererFactory.Context conte
 	public static final int SCR_MAX_LINES = 19;
 
 	@Override
-	public void render(ScreenBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+	public void render(ScreenBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		if (BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos()) ||
 			(MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainHandStack().isOf(Glowcase.TABLET_ITEM.get())))
@@ -128,6 +128,7 @@ public record ScreenBlockEntityRenderer(BlockEntityRendererFactory.Context conte
 	}
 
 	public static void renderPicture(@NotNull Identifier texture, float x1, float x2, float y1, float y2, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int light, boolean renderBackface) {
+		// fixme: don't do this! 1.21.6 removes RenderLayers
 		RenderLayer renderLayer = GlowcaseRenderLayers.getScreen(texture, !renderBackface);
 		VertexConsumer buffer = vertexConsumers.getBuffer(renderLayer);
 

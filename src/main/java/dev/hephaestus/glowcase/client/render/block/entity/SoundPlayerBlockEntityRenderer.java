@@ -8,12 +8,13 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 public record SoundPlayerBlockEntityRenderer(BlockEntityRendererFactory.Context context) implements BlockEntityRenderer<SoundPlayerBlockEntity> {
 	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/sound_block.png");
 
 	@Override
-	public void render(SoundPlayerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+	public void render(SoundPlayerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		if (BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos()))
 			BlockEntityRenderUtil.renderBillboardPlaceholder(entity, ITEM_TEXTURE, 1.0F, matrices, vertexConsumers, context.getRenderDispatcher().camera);

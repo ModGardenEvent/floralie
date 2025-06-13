@@ -15,14 +15,15 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 
 import java.util.Map;
@@ -40,7 +41,8 @@ public record SpriteBlockEntityRenderer(BlockEntityRendererFactory.Context conte
 		new Vector3f(-0.5F, 0.5F, 0.0F)
 	};
 
-	public void render(SpriteBlockEntity entity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+	@Override
+	public void render(SpriteBlockEntity entity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		matrices.push();
 		matrices.translate(0.5D, 0.5D, 0.5D);
@@ -59,7 +61,7 @@ public record SpriteBlockEntityRenderer(BlockEntityRendererFactory.Context conte
 		var entry = matrices.peek();
 		if (entity.getRenderItem() != null) {
 			client.getItemRenderer().renderItem(entity.getRenderItem(),
-				ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), 0);
+				ItemDisplayContext.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), 0);
 		} else {
 			Identifier identifier = Identifier.tryParse(Glowcase.MODID, "textures/sprite/" + entity.getSprite() + ".png");
 			boolean isMod = false; // Used for the invalid texture check further down

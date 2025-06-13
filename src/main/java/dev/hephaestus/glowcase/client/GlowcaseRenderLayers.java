@@ -10,6 +10,7 @@ import net.minecraft.util.Util;
 
 import java.util.function.BiFunction;
 
+// fixme: Don't do this! 1.21.6 removes RenderLayers
 public abstract class GlowcaseRenderLayers extends RenderLayer {
 	public static RenderPhase.Layering GLOWCASE_POLYGON_OFFSET_LAYERING = new Layering("glowcase_polygon_offset_layering", () -> {
 		RenderSystem.polygonOffset(-1, -1.0F);
