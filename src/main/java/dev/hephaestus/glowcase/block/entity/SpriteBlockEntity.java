@@ -28,7 +28,7 @@ public class SpriteBlockEntity extends GlowcaseBlockEntity {
 	public void setSprite(String newSprite) {
 		sprite = newSprite;
 		if (newSprite.contains(":")) {
-			Optional<Item> item = Registries.ITEM.getOrEmpty(Identifier.tryParse(newSprite));
+			Optional<Item> item = Registries.ITEM.getOptionalValue(Identifier.tryParse(newSprite));
 			renderItem = item.map(ItemStack::new).orElse(null);
 		} else {
 			renderItem = null;
@@ -59,11 +59,11 @@ public class SpriteBlockEntity extends GlowcaseBlockEntity {
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		setSprite(tag.getString("sprite"));
-		this.rotation = tag.getInt("rotation");
-		this.zOffset = TextBlockEntity.ZOffset.valueOf(tag.getString("z_offset"));
-		this.color = tag.getInt("color");
-		this.scale = tag.getFloat("scale");
+		tag.getString("sprite").ifPresent(this::setSprite);
+		tag.getInt("rotation").ifPresent(this::setRotation);
+		tag.getString("z_offset").ifPresent(s -> this.zOffset = TextBlockEntity.ZOffset.valueOf(s));
+		tag.getInt("color").ifPresent(i -> this.color = i);
+		tag.getFloat("scale").ifPresent(f -> this.scale = f);
 	}
 
 	public void setRotation(int rotation) {

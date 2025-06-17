@@ -51,7 +51,7 @@ public class TextBlockEntity extends GlowcaseBlockEntity {
 		tag.putBoolean("shadow", this.shadow);
 		tag.putFloat("viewDistance", this.viewDistance);
 
-		NbtList lines = tag.getList("lines", 8);
+		NbtList lines = tag.getListOrEmpty("lines");
 		for (var text : this.lines) {
 			lines.add(NbtString.of(Text.Serialization.toJsonString(text, registryLookup)));
 		}
@@ -64,16 +64,16 @@ public class TextBlockEntity extends GlowcaseBlockEntity {
 		super.readNbt(tag, registryLookup);
 
 		this.lines = new ArrayList<>();
-		this.scale = tag.getFloat("scale");
-		this.color = tag.getInt("color");
+		tag.getFloat("scale").ifPresent(f -> this.scale = f);
+		tag.getInt("color").ifPresent(i -> this.color = i);
 
 		// Force-fix alpha of 0 to opaque.
 		if ((this.color & ColorUtil.ALPHA_MASK) == 0) {
 			this.color |= ColorUtil.ALPHA_MASK;
 		}
 
-		if (tag.contains("shadow_type", NbtElement.STRING_TYPE)) {
-			switch (ShadowType.valueOf(tag.getString("shadow_type"))) {
+		if (tag.contains("shadow_type")) {
+			switch (ShadowType.valueOf(String.valueOf(tag.getString("shadow_type")))) {
 				case NONE -> {
 					this.backgroundColor = 0;
 					this.shadow = false;
@@ -89,23 +89,23 @@ public class TextBlockEntity extends GlowcaseBlockEntity {
 			}
 		}
 
-		if (tag.contains("background_color", NbtElement.NUMBER_TYPE)) {
-			this.backgroundColor = tag.getInt("background_color");
+		if (tag.contains("background_color")) {
+			tag.getInt("background_color").ifPresent(i -> this.backgroundColor = i);
 		}
 
 		if (tag.contains("shadow")) {
-			this.shadow = tag.getBoolean("shadow");
+			tag.getBoolean("shadow").ifPresent(b -> this.shadow = b);
 		}
 
-		this.textAlignment = TextAlignment.valueOf(tag.getString("text_alignment"));
-		this.zOffset = ZOffset.valueOf(tag.getString("z_offset"));
-		this.viewDistance = tag.contains("viewDistance") ? tag.getFloat("viewDistance") : -1.0F;
+		this.textAlignment = TextAlignment.valueOf(tag.getString("text_alignment").orElse("0"));
+		this.zOffset = ZOffset.valueOf(tag.getString("z_offset").orElse("0"));
+		this.viewDistance = tag.contains("viewDistance") ? tag.getFloat("viewDistance").orElse(0.0F) : -1.0F;
 
-		NbtList lines = tag.getList("lines", 8);
+		NbtList lines = tag.getListOrEmpty("lines");
 
 		for (NbtElement line : lines) {
-			if (line.getType() == NbtElement.END_TYPE) break;
-			this.lines.add(Text.Serialization.fromJson(line.asString(), registryLookup));
+			if (line.getType() != NbtElement.STRING_TYPE) break;
+			this.lines.add(Text.Serialization.fromJson(line.asString().orElseThrow(), registryLookup));
 		}
 
 		this.renderDirty = true;

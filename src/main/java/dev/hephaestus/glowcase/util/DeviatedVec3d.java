@@ -18,9 +18,9 @@ public record DeviatedVec3d(Vec3d mean, Vec3d stdDev) implements DeviatedValue<V
 	).apply(instance, DeviatedVec3d::new));
 
 	public static final PacketCodec<ByteBuf, DeviatedVec3d> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.VECTOR3F.xmap(Vec3d::new, Vec3d::toVector3f),
+		PacketCodecs.VECTOR_3F.xmap(Vec3d::new, Vec3d::toVector3f),
 		DeviatedVec3d::mean,
-		PacketCodecs.VECTOR3F.xmap(Vec3d::new, Vec3d::toVector3f),
+		PacketCodecs.VECTOR_3F.xmap(Vec3d::new, Vec3d::toVector3f),
 		DeviatedVec3d::stdDev,
 		DeviatedVec3d::new
 	);

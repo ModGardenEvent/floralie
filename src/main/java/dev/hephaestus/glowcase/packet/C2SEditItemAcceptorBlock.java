@@ -18,7 +18,7 @@ public record C2SEditItemAcceptorBlock(BlockPos pos, Identifier item, int count,
 		Identifier.PACKET_CODEC, C2SEditItemAcceptorBlock::item,
 		PacketCodecs.INTEGER, C2SEditItemAcceptorBlock::count,
 		PacketCodecs.INTEGER, C2SEditItemAcceptorBlock::pulse,
-		PacketCodecs.BOOL, C2SEditItemAcceptorBlock::isItemTag,
+		PacketCodecs.BOOLEAN, C2SEditItemAcceptorBlock::isItemTag,
 		PacketCodecs.BYTE.xmap(index -> ItemAcceptorBlockEntity.OutputDirection.values()[index], outputDirection -> (byte) outputDirection.ordinal()), C2SEditItemAcceptorBlock::outputDirection,
 		C2SEditItemAcceptorBlock::new
 	);

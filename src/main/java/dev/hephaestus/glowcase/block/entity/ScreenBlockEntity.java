@@ -3,6 +3,7 @@ package dev.hephaestus.glowcase.block.entity;
 import com.mojang.datafixers.util.Pair;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.client.GlowcaseClient;
+import dev.hephaestus.glowcase.util.PortUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
@@ -79,7 +80,7 @@ public class ScreenBlockEntity extends GlowcaseBlockEntity {
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
 
-		nbt.putUuid("macaddress", macaddress);
+		PortUtil.putUuid(nbt, "macaddress", macaddress);
 
 		nbt.putFloat("width", width);
 		nbt.putFloat("height", height);
@@ -109,7 +110,7 @@ public class ScreenBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 
-		macaddress = nbt.getUuid("macaddress");
+		macaddress = PortUtil.getUuid(nbt, "macaddress");
 
 		width = nbt.getFloat("width");
 		height = nbt.getFloat("height");

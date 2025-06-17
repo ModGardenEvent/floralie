@@ -39,12 +39,12 @@ public class ItemDisplayBlockEntity extends DisplayBlockEntity implements StackI
 	@Override
 	public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tag, registryLookup);
-		if (!this.stack.isEmpty()) tag.put("item", this.stack.encode(registryLookup));
+		if (!this.stack.isEmpty()) tag.put("item", this.stack.toNbt(registryLookup));
 	}
 
 	@Override
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
-		this.stack = tag.contains("item", NbtElement.COMPOUND_TYPE) ? ItemStack.fromNbt(registryLookup, tag.getCompound("item")).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
+		this.stack = tag.contains("item") ? ItemStack.fromNbt(registryLookup, tag.getCompoundOrEmpty("item")).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
 	}
 }

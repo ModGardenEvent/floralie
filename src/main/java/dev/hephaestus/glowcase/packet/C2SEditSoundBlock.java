@@ -65,7 +65,7 @@ public record C2SEditSoundBlock(SoundInfo soundInfo, PositionalInfo positionalIn
 			PacketCodecs.FLOAT, SoundInfo::volume,
 			PacketCodecs.FLOAT, SoundInfo::pitch,
 			PacketCodecs.INTEGER, SoundInfo::repeatDelay,
-			PacketCodecs.BOOL, SoundInfo::cancelOthers,
+			PacketCodecs.BOOLEAN, SoundInfo::cancelOthers,
 			SoundInfo::new
 		);
 	}
@@ -73,7 +73,7 @@ public record C2SEditSoundBlock(SoundInfo soundInfo, PositionalInfo positionalIn
 	public record PositionalInfo(float distance, boolean relative, Vec3d offset) {
 		public static final PacketCodec<RegistryByteBuf, PositionalInfo> PACKET_CODEC = PacketCodec.tuple(
 			PacketCodecs.FLOAT, PositionalInfo::distance,
-			PacketCodecs.BOOL, PositionalInfo::relative,
+			PacketCodecs.BOOLEAN, PositionalInfo::relative,
 			PacketCodecs.codec(Vec3d.CODEC), PositionalInfo::offset,
 			PositionalInfo::new
 		);

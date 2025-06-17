@@ -24,9 +24,9 @@ public record C2SEditScreenBlock(BlockPos pos, float width, float height, Screen
 			PacketCodecs.BYTE.encode(buf, (byte) packet.zOffset.ordinal());
 			PacketCodecs.FLOAT.encode(buf, packet.pitch);
             PacketCodecs.FLOAT.encode(buf, packet.yaw);
-			PacketCodecs.BOOL.encode(buf, packet.renderBackface);
-			PacketCodecs.BOOL.encode(buf, packet.eink);
-			PacketCodecs.BOOL.encode(buf, packet.stretch);
+			PacketCodecs.BOOLEAN.encode(buf, packet.renderBackface);
+			PacketCodecs.BOOLEAN.encode(buf, packet.eink);
+			PacketCodecs.BOOLEAN.encode(buf, packet.stretch);
 			PacketCodecs.STRING.encode(buf, trimmed.getFirst());
 			PacketCodecs.STRING.encode(buf, trimmed.getSecond());
 			PacketCodecs.FLOAT.encode(buf, packet.preciseX);
@@ -41,9 +41,9 @@ public record C2SEditScreenBlock(BlockPos pos, float width, float height, Screen
 			ScreenBlockEntity.Offset.values()[PacketCodecs.BYTE.decode(buf)],
 			PacketCodecs.FLOAT.decode(buf),
             PacketCodecs.FLOAT.decode(buf),
-			PacketCodecs.BOOL.decode(buf),
-			PacketCodecs.BOOL.decode(buf),
-			PacketCodecs.BOOL.decode(buf),
+			PacketCodecs.BOOLEAN.decode(buf),
+			PacketCodecs.BOOLEAN.decode(buf),
+			PacketCodecs.BOOLEAN.decode(buf),
 			PacketCodecs.STRING.decode(buf),
 			PacketCodecs.STRING.decode(buf),
 			PacketCodecs.FLOAT.decode(buf),

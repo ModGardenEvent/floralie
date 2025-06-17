@@ -7,6 +7,7 @@ import dev.hephaestus.glowcase.util.DeviatedVec3d;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -64,35 +65,35 @@ public class ParticleDisplayBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		RegistryOps<NbtElement> ops = registryLookup.getOps(NbtOps.INSTANCE);
+		var ops = NbtOps.INSTANCE;
 
 		if (tag.contains("particle"))
-			ParticleTypes.TYPE_CODEC.parse(ops, tag.getCompound("particle"))
+			ParticleTypes.TYPE_CODEC.parse(ops, tag.getCompoundOrEmpty("particle"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.particle = result);
 
 		if (tag.contains("position"))
-			DeviatedVec3d.CODEC.parse(ops, tag.getCompound("position"))
+			DeviatedVec3d.CODEC.parse(ops, tag.getCompoundOrEmpty("position"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.position = result);
 
 		if (tag.contains("velocity"))
-			DeviatedVec3d.CODEC.parse(ops, tag.getCompound("velocity"))
+			DeviatedVec3d.CODEC.parse(ops, tag.getCompoundOrEmpty("velocity"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.velocity = result);
 
 		if (tag.contains("count"))
-			DeviatedInteger.CODEC.parse(ops, tag.getCompound("count"))
+			DeviatedInteger.CODEC.parse(ops, tag.getCompoundOrEmpty("count"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.count = result);
 
 		if (tag.contains("tick_rate"))
-			DeviatedInteger.CODEC.parse(ops, tag.getCompound("tick_rate"))
+			DeviatedInteger.CODEC.parse(ops, tag.getCompoundOrEmpty("tick_rate"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.tickRate = result);
 	}
 
-	@Environment(EnvType.CLIENT)
+//	@Environment(EnvType.CLIENT) // tsk tsk. don't do this, ever.
 	public static void clientTick(World world, BlockPos pos, BlockState state, ParticleDisplayBlockEntity entity) {
 		entity.tickCounter--;
 		if (entity.tickCounter > 0) return;
@@ -101,12 +102,14 @@ public class ParticleDisplayBlockEntity extends GlowcaseBlockEntity {
 		for (int i = 0; i < entity.count.get(world.random::nextDouble); i++) {
 			Vec3d particlePos = entity.position.get(world.random::nextGaussian).add(pos.toCenterPos());
 			Vec3d particleVelocity = entity.velocity.get(world.random::nextGaussian);
-
-			world.addParticle(
-				entity.particle,
-				particlePos.x, particlePos.y, particlePos.z,
-				particleVelocity.x, particleVelocity.y, particleVelocity.z
-			);
+			
+			if (world instanceof ClientWorld clientWorld) {
+				clientWorld.addParticleClient(
+					entity.particle,
+					particlePos.x, particlePos.y, particlePos.z,
+					particleVelocity.x, particleVelocity.y, particleVelocity.z
+				);
+			}
 		}
 	}
 }

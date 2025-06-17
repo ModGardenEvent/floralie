@@ -50,7 +50,7 @@ public abstract class DisplayBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		if (nbt.contains("display")) {
-			var result = DisplayBlockSettings.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("display"));
+			var result = DisplayBlockSettings.CODEC.decode(NbtOps.INSTANCE, nbt.getCompoundOrEmpty("display"));
 			if (result.isSuccess()) {
 				loadSettings(result.getOrThrow().getFirst());
 				return;

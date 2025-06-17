@@ -18,11 +18,11 @@ public record DisplayBlockSettings(Vector3f offset, Vector3f scale, float pitch,
 	).apply(instance, DisplayBlockSettings::new));
 
 	public static final PacketCodec<ByteBuf, DisplayBlockSettings> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.VECTOR3F, DisplayBlockSettings::offset,
-		PacketCodecs.VECTOR3F, DisplayBlockSettings::scale,
+		PacketCodecs.VECTOR_3F, DisplayBlockSettings::offset,
+		PacketCodecs.VECTOR_3F, DisplayBlockSettings::scale,
 		PacketCodecs.FLOAT, DisplayBlockSettings::pitch,
 		PacketCodecs.FLOAT, DisplayBlockSettings::yaw,
-		PacketCodecs.BOOL, DisplayBlockSettings::renderAsBlock,
+		PacketCodecs.BOOLEAN, DisplayBlockSettings::renderAsBlock,
 		DisplayBlockSettings::new
 	);
 

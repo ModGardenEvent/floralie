@@ -48,7 +48,7 @@ public class HyperlinkBlockEntity extends GlowcaseBlockEntity {
 	@Override
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
-		this.title = tag.getString("title");
-		this.url = tag.getString("url");
+		tag.getString("title").ifPresent(s -> this.title = s);
+		tag.getString("url").ifPresent(s -> this.url = s);
 	}
 }

@@ -55,7 +55,7 @@ public record C2SEditTextBlock(BlockPos pos, TextBlockEntity.TextAlignment align
 	public record TextBlockValues(boolean shadow, float scale, int backgroundColor, int color, List<Text> lines,
 								  float viewDistance) {
 		public static final PacketCodec<RegistryByteBuf, TextBlockValues> PACKET_CODEC = PacketCodec.tuple(
-			PacketCodecs.BOOL, TextBlockValues::shadow,
+			PacketCodecs.BOOLEAN, TextBlockValues::shadow,
 			PacketCodecs.FLOAT, TextBlockValues::scale,
 			PacketCodecs.INTEGER, TextBlockValues::backgroundColor,
 			PacketCodecs.INTEGER, TextBlockValues::color,

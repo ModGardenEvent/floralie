@@ -53,6 +53,6 @@ public abstract class StackInteractableBlock extends WaterloggableGlowcaseBlock 
 			}
 		}
 
-		return ActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
 	}
 }

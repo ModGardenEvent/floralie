@@ -22,8 +22,8 @@ public class OutlineBlockEntity extends GlowcaseBlockEntity {
 	public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tag, registryLookup);
 
-		tag.putIntArray("offset", List.of(this.offset.getX(), this.offset.getY(), this.offset.getZ()));
-		tag.putIntArray("scale", List.of(this.scale.getX(), this.scale.getY(), this.scale.getZ()));
+		tag.putIntArray("offset", new int[]{this.offset.getX(), this.offset.getY(), this.offset.getZ()});
+		tag.putIntArray("scale", new int[]{this.scale.getX(), this.scale.getY(), this.scale.getZ()});
 		tag.putInt("color", this.color);
 	}
 
@@ -31,11 +31,9 @@ public class OutlineBlockEntity extends GlowcaseBlockEntity {
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		int[] offset = tag.getIntArray("offset");
-		int[] scale = tag.getIntArray("scale");
+		tag.getIntArray("offset").ifPresent(ia -> this.offset = new Vec3i(ia[0], ia[1], ia[2]));
+		tag.getIntArray("scale").ifPresent(ia -> this.scale = new Vec3i(ia[0], ia[1], ia[2]));
 
-		this.offset = new Vec3i(offset[0], offset[1], offset[2]);
-		this.scale = new Vec3i(scale[0], scale[1], scale[2]);
-		this.color = tag.getInt("color");
+		tag.getInt("color").ifPresent(i -> this.color = i);
 	}
 }

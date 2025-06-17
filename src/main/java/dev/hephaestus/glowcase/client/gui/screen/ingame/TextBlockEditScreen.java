@@ -1,8 +1,8 @@
 package dev.hephaestus.glowcase.client.gui.screen.ingame;
 
 import com.google.common.primitives.Floats;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.ColorPickerWidget;
 import dev.hephaestus.glowcase.client.util.ColorUtil;
@@ -17,9 +17,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.text.Text;
@@ -259,14 +257,15 @@ public class TextBlockEditScreen extends TextEditorScreen {
 					int endX = startX + this.client.textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
 					Tessellator tessellator = Tessellator.getInstance();
 					BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-					RenderSystem.enableColorLogicOp();
-					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+					// fixme: find equivalents
+//					RenderSystem.enableColorLogicOp();
+//					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, caretEndY, 0.0F).color(0, 0, 255, 255);
 					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, caretEndY, 0.0F).color(0, 0, 255, 255);
 					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, caretStartY, 0.0F).color(0, 0, 255, 255);
 					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, caretStartY, 0.0F).color(0, 0, 255, 255);
-					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-					RenderSystem.disableColorLogicOp();
+//					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+//					RenderSystem.disableColorLogicOp();
 				}
 			}
 

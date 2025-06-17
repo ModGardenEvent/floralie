@@ -39,7 +39,7 @@ public class PopupBlockEntity extends GlowcaseBlockEntity {
 
 		tag.putString("text_alignment", this.textAlignment.name());
 
-		NbtList lines = tag.getList("lines", 8);
+		NbtList lines = tag.getListOrEmpty("lines");
 		for (var text : this.lines) {
 			lines.add(NbtString.of(Text.Serialization.toJsonString(text, registryLookup)));
 		}
@@ -51,17 +51,17 @@ public class PopupBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		this.title = tag.getString("title");
+		tag.getString("title").ifPresent(s -> this.title = s);
 		this.lines = new ArrayList<>();
-		this.color = tag.getInt("color");
+		tag.getInt("color").ifPresent(i -> this.color = i);
 
-		this.textAlignment = TextBlockEntity.TextAlignment.valueOf(tag.getString("text_alignment"));
+		tag.getString("text_alignment").ifPresent(s -> this.textAlignment = TextBlockEntity.TextAlignment.valueOf(s));
 
-		NbtList lines = tag.getList("lines", 8);
+		NbtList lines = tag.getListOrEmpty("lines");
 
 		for (NbtElement line : lines) {
-			if (line.getType() == NbtElement.END_TYPE) break;
-			this.lines.add(Text.Serialization.fromJson(line.asString(), registryLookup));
+			if (line.getType() != NbtElement.STRING_TYPE) break;
+			this.lines.add(Text.Serialization.fromJson(line.asString().orElseThrow(), registryLookup));
 		}
 
 		this.renderDirty = true;
