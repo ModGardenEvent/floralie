@@ -85,4 +85,14 @@ public class Vec3FieldsWidget extends ContainerWidget {
 	public Vec3d value() {
 		return value;
 	}
+
+	@Override
+	protected int getContentsHeightWithPadding() {
+		return 9 + 4; //FIXME: get this right
+	}
+
+	@Override
+	protected double getDeltaYPerScroll() {
+		return 9.0 / 2.0;
+	}
 }

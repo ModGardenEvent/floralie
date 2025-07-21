@@ -73,7 +73,7 @@ public class ParticleDisplayEditScreen extends GlowcaseScreen {
 
 		particleId.setMaxLength(9999);
 
-		String optionsString = effectToTag(blockEntity.particle, lookup.getOps(NbtOps.INSTANCE)).asString();
+		String optionsString = effectToTag(blockEntity.particle, lookup.getOps(NbtOps.INSTANCE)).toString();
 		if (optionsString.startsWith("{}")) optionsString = "";
 
 		particleId.setText(Registries.PARTICLE_TYPE.getId(blockEntity.particle.getType()) + optionsString);
@@ -320,7 +320,7 @@ public class ParticleDisplayEditScreen extends GlowcaseScreen {
 		RegistryKey<ParticleType<?>> key = RegistryKey.of(RegistryKeys.PARTICLE_TYPE, id);
 
 		Optional<RegistryEntry.Reference<ParticleType<?>>> optionalType =
-			lookup.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE).getOptional(key);
+			lookup.getOrThrow(RegistryKeys.PARTICLE_TYPE).getOptional(key);
 		if (optionalType.isEmpty()) return;
 
 		ParticleType<ParticleEffect> type = (ParticleType<ParticleEffect>) optionalType.get().value();
@@ -329,7 +329,7 @@ public class ParticleDisplayEditScreen extends GlowcaseScreen {
 		try {
 			nbtCompound = paramStart == -1 ?
 				new NbtCompound() :
-				StringNbtReader.parse(idText.substring(paramStart));
+				StringNbtReader.readCompound(idText.substring(paramStart));
 		} catch (CommandSyntaxException e) {
 			return;
 		}

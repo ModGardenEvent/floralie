@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "glowcase:block/item_acceptor_block"
+  }
+}

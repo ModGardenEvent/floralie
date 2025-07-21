@@ -14,10 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class ItemAcceptorBlockEntity extends GlowcaseBlockEntity {
 	private Identifier item = Identifier.ofVanilla("air");
@@ -46,26 +43,17 @@ public class ItemAcceptorBlockEntity extends GlowcaseBlockEntity {
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		if (tag.contains("item", NbtElement.STRING_TYPE)) {
-			setItem(Identifier.tryParse(tag.getString("item")));
-		}
+		setItem(Identifier.tryParse(tag.getString("item", "minecraft:air")));
 
-		if (tag.contains("count", NbtElement.NUMBER_TYPE)) {
-			this.count = tag.getInt("count");
-		}
+		this.count = tag.getInt("count", 1);
 
-		if (tag.contains("pulse", NbtElement.NUMBER_TYPE)) {
-			this.pulse = tag.getInt("pulse");
-		}
+		this.pulse = tag.getInt("pulse", 4);
 
-		this.isItemTag = tag.getBoolean("is_item_tag");
+		this.isItemTag = tag.getBoolean("is_item_tag", false);
+		OutputDirection value = OutputDirection.getByName(tag.getString("output_direction"));
 
-		if (tag.contains("output_direction", NbtElement.STRING_TYPE)) {
-			OutputDirection value = OutputDirection.getByName(tag.getString("output_direction"));
-
-			if (value != null) {
-				this.outputDirection = value;
-			}
+		if (value != null) {
+			this.outputDirection = value;
 		}
 	}
 
@@ -124,11 +112,8 @@ public class ItemAcceptorBlockEntity extends GlowcaseBlockEntity {
 			directions = Map.copyOf(map);
 		}
 
-		public static OutputDirection getByName(String name) {
-			if (name == null) {
-				return null;
-			}
-			return directions.get(name.toLowerCase(Locale.ROOT));
+		public static OutputDirection getByName(Optional<String> name) {
+			return name.map(s -> directions.get(s.toLowerCase(Locale.ROOT))).orElse(null);
 		}
 	}
 }

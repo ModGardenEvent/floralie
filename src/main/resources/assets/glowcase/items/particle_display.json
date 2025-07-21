@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "glowcase:item/particle_display",
+    "tints": [
+      {
+        "type": "glowcase:auto",
+        "default": -1
+      }
+    ]
+  }
+}

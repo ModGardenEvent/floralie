@@ -17,7 +17,7 @@ import net.minecraft.util.Formatting;
 public record CollectableStack(RegistryEntry<Item> item, ComponentChanges changes, int count, boolean collected) {
 	public static final Codec<CollectableStack> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-			ItemStack.ITEM_CODEC.fieldOf("item").forGetter(CollectableStack::item),
+			Item.ENTRY_CODEC.fieldOf("item").forGetter(CollectableStack::item),
 			ComponentChanges.CODEC.fieldOf("components").forGetter(CollectableStack::changes),
 			Codec.INT.fieldOf("count").forGetter(CollectableStack::count),
 			Codec.BOOL.fieldOf("collected").forGetter(CollectableStack::collected)
@@ -33,7 +33,7 @@ public record CollectableStack(RegistryEntry<Item> item, ComponentChanges change
 		Text name = stack.getName();
 		JukeboxPlayableComponent songComponent = stack.get(DataComponentTypes.JUKEBOX_PLAYABLE);
 		if (songComponent != null) {
-			JukeboxSong song = songComponent.song().getEntry(lookup).map(RegistryEntry::value).orElse(null);
+			JukeboxSong song = songComponent.song().resolveEntry(lookup).map(RegistryEntry::value).orElse(null);
 			if (song != null) {
 				name = song.description();
 			}

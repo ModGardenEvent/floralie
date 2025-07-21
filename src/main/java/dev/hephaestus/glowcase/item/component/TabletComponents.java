@@ -34,8 +34,8 @@ public class TabletComponents {
 
 		{
 			CURRENT_SLIDE_TYPE = ComponentType.<Integer>builder()
-				.codec(Codecs.NONNEGATIVE_INT)
-				.packetCodec(PacketCodecs.registryCodec(Codecs.NONNEGATIVE_INT))
+				.codec(Codecs.NON_NEGATIVE_INT)
+				.packetCodec(PacketCodecs.registryCodec(Codecs.NON_NEGATIVE_INT))
 				.build();
 		}
 

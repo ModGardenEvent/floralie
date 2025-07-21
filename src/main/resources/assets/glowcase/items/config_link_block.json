@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "glowcase:item/config_link_block",
+    "tints": [
+      {
+        "type": "glowcase:auto",
+        "default": -1
+      }
+    ]
+  }
+}

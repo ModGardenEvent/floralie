@@ -53,7 +53,7 @@ public class ConfigLinkBlockEntity extends GlowcaseBlockEntity {
 	@Override
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
-		this.title = tag.getString("title");
-		this.url = tag.getString("url");
+		this.title = tag.getString("title", "");
+		this.url = tag.getString("url", "");
 	}
 }

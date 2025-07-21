@@ -20,6 +20,7 @@ import dev.hephaestus.glowcase.client.render.block.entity.TextBlockEntityRendere
 import dev.hephaestus.glowcase.client.render.item.ItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.NoteItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.TabletItemHandRenderer;
+import dev.hephaestus.glowcase.client.render.item.tint.GlowcaseTintSource;
 import dev.hephaestus.glowcase.client.util.NoteTextColorResource;
 import dev.hephaestus.glowcase.item.ScrollableItem;
 import dev.hephaestus.glowcase.mixin.HandledScreenInvoker;
@@ -34,6 +35,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.render.item.tint.TintSourceTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.slot.Slot;
@@ -71,39 +73,7 @@ public class GlowcaseClient implements ClientModInitializer {
 		ItemHandRenderer.register(Glowcase.TABLET_ITEM.get().asItem(), new TabletItemHandRenderer());
 		ItemHandRenderer.register(Glowcase.NOTE_ITEM.get().asItem(), new NoteItemHandRenderer());
 
-		// FIXME: Find alternative way to do this
-//		ColorProviderRegistry.ITEM.register((stack, index) -> {
-//				NbtComponent component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
-//				if (component == null) return 0xFFFFFF;
-//				NbtCompound nbt = component.getNbt();
-//				if (nbt != null) {
-//					int color = nbt.getInt("color");
-//					if (color != 0 && color != 0xFFFFFF) return color;
-//				}
-//				return 0xAA00AA;
-//			},
-//			Glowcase.TEXT_BLOCK_ITEM.get(),
-//			Glowcase.HYPERLINK_BLOCK_ITEM.get(),
-//			Glowcase.CONFIG_LINK_BLOCK_ITEM.get(),
-//			Glowcase.ITEM_DISPLAY_BLOCK_ITEM.get(),
-//			Glowcase.POPUP_BLOCK_ITEM.get(),
-//			Glowcase.SCREEN_BLOCK_ITEM.get(),
-//			Glowcase.SPRITE_BLOCK_ITEM.get(),
-//			Glowcase.OUTLINE_BLOCK_ITEM.get(),
-//			Glowcase.PARTICLE_DISPLAY_ITEM.get(),
-//			Glowcase.SOUND_BLOCK_ITEM.get(),
-//			Glowcase.ITEM_ACCEPTOR_BLOCK_ITEM.get(),
-//			Glowcase.ITEM_PROVIDER_BLOCK_ITEM.get(),
-//			Glowcase.ENTITY_DISPLAY_BLOCK_ITEM.get()
-//		);
-//
-//		ColorProviderRegistry.ITEM.register((stack, index) -> stack.contains(DataComponentTypes.DYED_COLOR) ? 0xFF000000 | stack.get(DataComponentTypes.DYED_COLOR).rgb() : 0xFFFFFFFF,
-//			Glowcase.COLLECTION_CASE_ITEM.get()
-//		);
-
-		// get rid of this BER nobody likes it
-//		WorldRenderEvents.AFTER_ENTITIES.register(BakedBlockEntityRenderer.Manager::render);
-//		InvalidateRenderStateCallback.EVENT.register(BakedBlockEntityRenderer.Manager::reset);
+		TintSourceTypes.ID_MAPPER.put(Glowcase.id("auto"), GlowcaseTintSource.CODEC);
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new NoteTextColorResource());
 

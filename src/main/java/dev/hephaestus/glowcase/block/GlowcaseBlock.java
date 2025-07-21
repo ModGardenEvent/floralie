@@ -102,10 +102,16 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 	}
 
 	public static boolean canEditGlowcase(PlayerEntity player, BlockPos pos) {
-		return player != null && player.isCreative() && player.canModifyAt((ServerWorld) player.getWorld(), pos);
+		if (player == null) return false;
+
+		if (player.getWorld() instanceof ServerWorld serverWorld) {
+			return player.isCreative() && player.canModifyAt(serverWorld, pos);
+		}
+
+		return player.isCreative();
 	}
 
-	protected static AbstractBlock.Settings defaultSettings() {
+	public static AbstractBlock.Settings defaultSettings() {
 		return Settings.create()
 			.nonOpaque()
 			.dropsNothing()

@@ -4,17 +4,20 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.hephaestus.glowcase.client.gui.screen.ingame.ColorPickerIncludedScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 import java.awt.*;
 import java.util.ArrayList;
@@ -142,9 +145,11 @@ public class ColorPickerWidget extends PressableWidget {
 		if(!visible) return;
 		updateHSL();
 
-		context.setShaderColor(1f, 1f, 1f, this.alpha);
-		RenderSystem.enableBlend();
-		RenderSystem.enableDepthTest();
+//		context.setShaderColor(1f, 1f, 1f, this.alpha);
+//		RenderSystem.enableBlend();
+//		RenderSystem.enableDepthTest();
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
 
 		int x = this.getX();
 		int y = this.getY();
@@ -153,7 +158,7 @@ public class ColorPickerWidget extends PressableWidget {
 		int height = this.getHeight();
 
 		//background
-		context.drawTexture(Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png"), x, y, z, 0, 0, width, height, 32, 32);
+		context.drawTexture(RenderLayer::getGuiTextured, Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png"), x, y, z, 0,0, 0, width, height, 32, 32);
 		if(this.isSelected()) {
 			//outline
 			drawOutline(context, x, y, width, height, z, Color.white);
@@ -176,7 +181,9 @@ public class ColorPickerWidget extends PressableWidget {
 		this.confirmButton.renderWidget(context, mouseX, mouseY, delta);
 		this.cancelButton.renderWidget(context, mouseX, mouseY, delta);
 
-		context.setShaderColor(1f, 1f, 1f, 1f);
+		matrices.pop();
+
+//		context.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
 	public void updatePositions() {
@@ -248,13 +255,15 @@ public class ColorPickerWidget extends PressableWidget {
 
 	private void sidewaysGradient(DrawContext context, float x, float y, float width, float height, float z, int startColor, int endColor) {
 		RenderLayer layer = RenderLayer.getGui();
-		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(layer);
-
-		Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
-		vertexConsumer.vertex(matrix, x, y, z).color(startColor);
-		vertexConsumer.vertex(matrix, x, y + height, z).color(startColor);
-		vertexConsumer.vertex(matrix, x + width, y + height, z).color(endColor);
-		vertexConsumer.vertex(matrix, x + width, y, z).color(endColor);
+		// TODO this probably wasn't being used for a reason
+		context.fillGradient(layer, (int) x, (int) y, (int) (x+width), (int) (y+width), startColor, endColor, (int) z);
+//		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(layer);
+//
+//		Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
+//		vertexConsumer.vertex(matrix, x, y, z).color(startColor);
+//		vertexConsumer.vertex(matrix, x, y + height, z).color(startColor);
+//		vertexConsumer.vertex(matrix, x + width, y + height, z).color(endColor);
+//		vertexConsumer.vertex(matrix, x + width, y, z).color(endColor);
 	}
 
 	private void drawPresets(DrawContext context, int mouseX, int mouseY, float delta, int x, int y, int height, int z, int presetSize, int presetsPerLine, int presetPadding) {

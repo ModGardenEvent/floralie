@@ -28,11 +28,12 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 public class SoundPlayerBlockEntity extends GlowcaseBlockEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
-	public Identifier soundId = SoundEvents.ENTITY_CAT_PURREOW.getId();
+	public Identifier soundId = SoundEvents.ENTITY_CAT_PURREOW.id();
 	public SoundCategory category = SoundCategory.BLOCKS;
 	public float volume = 1;
 	public float pitch = 1;
@@ -83,19 +84,19 @@ public class SoundPlayerBlockEntity extends GlowcaseBlockEntity {
 			Identifier.CODEC.parse(ops, tag.get("sound"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.soundId = result);
-		this.category = SoundCategory.valueOf(tag.getString("category"));
-		this.volume = tag.getFloat("volume");
-		this.pitch = tag.getFloat("pitch");
-		this.repeatDelay = tag.getInt("repeatDelay");
-		this.distance = tag.getFloat("distance");
-		this.relative = tag.getBoolean("relative");
-		this.cancelOthers = tag.getBoolean("cancelOthers");
+		this.category = SoundCategory.valueOf(tag.getString("category", ""));
+		this.volume = tag.getFloat("volume", 1);
+		this.pitch = tag.getFloat("pitch", 1);
+		this.repeatDelay = tag.getInt("repeatDelay", 0);
+		this.distance = tag.getFloat("distance", 16);
+		this.relative = tag.getBoolean("relative", false);
+		this.cancelOthers = tag.getBoolean("cancelOthers", false);
 		if (tag.contains("offset"))
 			Vec3d.CODEC.parse(ops, tag.get("offset"))
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(result -> this.offset = result);
 
-		if (tag.contains("volumeSampler", NbtElement.STRING_TYPE)) {
+		if (tag.contains("volumeSampler")) {
 			final PositionSampler sampler = PositionSampler.getByName(tag.getString("volumeSampler"));
 			if (sampler != null) {
 				this.volumeSampler = sampler;
@@ -185,11 +186,8 @@ public class SoundPlayerBlockEntity extends GlowcaseBlockEntity {
 			lookup = Map.copyOf(samplers);
 		}
 
-		public static PositionSampler getByName(String value) {
-			if (value == null) {
-				return null;
-			}
-			return lookup.get(value.toLowerCase(Locale.ROOT));
+		public static PositionSampler getByName(Optional<String> value) {
+			return value.map(s -> lookup.get(s.toLowerCase(Locale.ROOT))).orElse(null);
 		}
 
 		public abstract Vec3d getPosition(MinecraftClient client);

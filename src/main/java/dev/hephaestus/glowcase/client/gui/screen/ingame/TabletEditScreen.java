@@ -11,6 +11,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -131,7 +133,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.renderBackground(context, mouseX, mouseY, delta);
-		context.drawTexture(TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, 0, 0, BG_WIDTH, BG_HEIGHT);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, 0, 0, BG_WIDTH, BG_HEIGHT, BG_WIDTH, BG_HEIGHT);
 
 		// Render Slideshow
 
@@ -141,7 +143,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 			width/2 - BG_WIDTH/2 + SCREEN_X2,
 			height/2 - BG_HEIGHT/2 + SCREEN_Y2
 		);
-		RenderSystem.enableBlend();
+//		RenderSystem.enableBlend();
 
 		// Previous and Next Slide
 		renderPicture(context, previous_slide, width/2 - BG_WIDTH/2, height/2 - 20, .8f);
@@ -151,23 +153,24 @@ public class TabletEditScreen extends GlowcaseScreen {
 		// We can't really use the build-in gradient because it only goes vertical
 
 		// Left
-		context.drawTexture(TEXTURE,
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,
 			width/2 - BG_WIDTH/2 + SCREEN_X1,
 			height/2 - BG_HEIGHT/2 + SCREEN_Y1,
-			0,160, IMG_WIDTH-1, (SCREEN_Y2-SCREEN_Y1)+1
+			0,160, IMG_WIDTH-1, (SCREEN_Y2-SCREEN_Y1)+1,
+			BG_WIDTH, BG_HEIGHT
 		);
 
 		// Right
-		context.drawTexture(TEXTURE,
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,
 			width/2 - BG_WIDTH/2 + SCREEN_X2 - IMG_WIDTH + 1,
 			height/2 - BG_HEIGHT/2 + SCREEN_Y1,
-			BG_WIDTH - IMG_WIDTH + 1,160, IMG_WIDTH-1, (SCREEN_Y2-SCREEN_Y1)+1
+			BG_WIDTH - IMG_WIDTH + 1,160, IMG_WIDTH-1, (SCREEN_Y2-SCREEN_Y1)+1, BG_WIDTH, BG_HEIGHT
 		);
 
 		// Current slide
 		renderPicture(context, current_slide, width/2, height/2 - 20, 1f);
 
-		RenderSystem.disableBlend();
+//		RenderSystem.disableBlend();
 		context.disableScissor();
 	}
 
@@ -191,7 +194,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 		int scaled_width = (int) (cur_width * final_scale);
 		int scaled_height = (int) (cur_height * final_scale);
 
-		context.drawTexture(slide.getTexture().getSecond(),
+		context.drawTexture(RenderLayer::getGuiTextured, slide.getTexture().getSecond(),
 			x - scaled_width/2, y - scaled_height/2 , 0, 0, scaled_width, scaled_height, scaled_width, scaled_height);
 	}
 
