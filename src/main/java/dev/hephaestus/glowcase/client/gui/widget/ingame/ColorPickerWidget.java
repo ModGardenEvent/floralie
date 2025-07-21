@@ -2,6 +2,7 @@ package dev.hephaestus.glowcase.client.gui.widget.ingame;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.hephaestus.glowcase.client.gui.screen.ingame.ColorPickerIncludedScreen;
+import dev.hephaestus.glowcase.mixin.client.DrawContextAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
@@ -255,15 +256,13 @@ public class ColorPickerWidget extends PressableWidget {
 
 	private void sidewaysGradient(DrawContext context, float x, float y, float width, float height, float z, int startColor, int endColor) {
 		RenderLayer layer = RenderLayer.getGui();
-		// TODO this probably wasn't being used for a reason
-		context.fillGradient(layer, (int) x, (int) y, (int) (x+width), (int) (y+width), startColor, endColor, (int) z);
-//		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(layer);
-//
-//		Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
-//		vertexConsumer.vertex(matrix, x, y, z).color(startColor);
-//		vertexConsumer.vertex(matrix, x, y + height, z).color(startColor);
-//		vertexConsumer.vertex(matrix, x + width, y + height, z).color(endColor);
-//		vertexConsumer.vertex(matrix, x + width, y, z).color(endColor);
+		VertexConsumer vertexConsumer = ((DrawContextAccessor) context).glowcase$getVertexConsumers().getBuffer(layer);
+
+		Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
+		vertexConsumer.vertex(matrix, x, y, z).color(startColor);
+		vertexConsumer.vertex(matrix, x, y + height, z).color(startColor);
+		vertexConsumer.vertex(matrix, x + width, y + height, z).color(endColor);
+		vertexConsumer.vertex(matrix, x + width, y, z).color(endColor);
 	}
 
 	private void drawPresets(DrawContext context, int mouseX, int mouseY, float delta, int x, int y, int height, int z, int presetSize, int presetsPerLine, int presetPadding) {

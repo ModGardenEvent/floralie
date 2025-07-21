@@ -10,6 +10,7 @@
 	],
 	"client": [
 		"HandledScreenInvoker",
+		"client.DrawContextAccessor",
 		"client.KeyboardMixin",
 		"client.MixinHeldItemRenderer",
 		"client.MixinInGameHud",
