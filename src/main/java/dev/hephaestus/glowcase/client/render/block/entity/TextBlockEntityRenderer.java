@@ -3,19 +3,25 @@ package dev.hephaestus.glowcase.client.render.block.entity;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.util.BlockEntityRenderUtil;
+import dev.hephaestus.glowcase.mixin.client.TextRendererAccessor;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.BakedGlyph;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEntity> {
@@ -102,7 +108,7 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 				matrices.multiply(new Quaternionf().rotateLocalY(MathHelper.PI));
 				matrices.translate(-width, 0, -0.025D);
 
-				//drawFillRect(matrices, vertexConsumers, (int) width + 5, (i + 1) * 12 - 2, -5, i * 12 - 2, entity.backgroundColor);
+				drawFillRect(matrices, vertexConsumers, (int) width + 5, (i + 1) * 12 - 2, -5, i * 12 - 2, entity.backgroundColor);
 				matrices.pop();
 			}
 
@@ -113,5 +119,20 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 		}
 
 		matrices.pop();
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private void drawFillRect(MatrixStack matrices, VertexConsumerProvider vcp, int x1, int y1, int x2, int y2, int color) {
+		// Horrible up to no good hack to get proper translucency sorting :3
+		final BakedGlyph renderer = ((TextRendererAccessor) MinecraftClient.getInstance().textRenderer)
+			.invokeGetFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
+
+		final RenderLayer renderLayer = renderer.getLayer(TextRenderer.TextLayerType.NORMAL);
+		final VertexConsumer consumer = vcp.getBuffer(renderLayer);
+		final Matrix4f matrix = matrices.peek().getPositionMatrix();
+
+		renderer.drawRectangle(new BakedGlyph.Rectangle(
+			x1, y1, x2, y2, 0.2f, color
+		), matrix, consumer, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 	}
 }
