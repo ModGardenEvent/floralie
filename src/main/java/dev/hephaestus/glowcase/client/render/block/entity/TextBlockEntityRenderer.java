@@ -1,0 +1,117 @@
+package dev.hephaestus.glowcase.client.render.block.entity;
+
+import dev.hephaestus.glowcase.Glowcase;
+import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
+import dev.hephaestus.glowcase.client.util.BlockEntityRenderUtil;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Quaternionf;
+
+public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEntity> {
+	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/text_block.png");
+	private final BlockEntityRendererFactory.Context context;
+	private boolean wasOutOfRange = false;
+
+	public TextBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+		this.context = context;
+	}
+
+	@Override
+	public void render(
+		TextBlockEntity entity,
+		float tickProgress,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		Vec3d cameraPos
+	) {
+		Entity camera = MinecraftClient.getInstance().getCameraEntity();
+		if (camera != null && entity.viewDistance >= 0) {
+			double dx = camera.getX() - (entity.getPos().getX() + 0.5);
+			double dy = camera.getY() - (entity.getPos().getY() + 0.5);
+			double dz = camera.getZ() - (entity.getPos().getZ() + 0.5);
+
+			if ((dx * dx + dy * dy + dz * dz) > (entity.viewDistance * entity.viewDistance)) {
+				if (!wasOutOfRange) {
+					entity.renderDirty = true;
+					wasOutOfRange = true;
+				}
+
+				return;
+			} else {
+				if (wasOutOfRange) {
+					entity.renderDirty = true;
+				}
+
+				wasOutOfRange = false;
+			}
+		}
+
+		matrices.push();
+		matrices.translate(0.5D, 0.5D, 0.5D);
+
+		float rotation = -(entity.getCachedState().get(Properties.ROTATION) * 360) / 16.0F;
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+
+		switch (entity.zOffset) {
+			case FRONT -> matrices.translate(0D, 0D, 0.4D);
+			case BACK -> matrices.translate(0D, 0D, -0.4D);
+		}
+
+		float scale = 0.010416667F * entity.scale;
+		matrices.scale(scale, -scale, scale);
+		TextRenderer textRenderer = this.context.getTextRenderer();
+
+		double maxLength = 0;
+		double minLength = Double.MAX_VALUE;
+		for (int i = 0; i < entity.lines.size(); ++i) {
+			maxLength = Math.max(maxLength, textRenderer.getWidth(entity.lines.get(i)));
+			minLength = Math.min(minLength, textRenderer.getWidth(entity.lines.get(i)));
+		}
+
+		matrices.translate(0, -((entity.lines.size() - 0.25) * 12) / 2D, 0D);
+		for (int i = 0; i < entity.lines.size(); ++i) {
+			double width = textRenderer.getWidth(entity.lines.get(i));
+			double dX = switch (entity.textAlignment) {
+				case LEFT -> -maxLength / 2D;
+				case CENTER -> (maxLength - width) / 2D - maxLength / 2D;
+				case CENTER_LEFT -> - (50D / entity.scale) - (width / 2D);
+				case CENTER_RIGHT -> (50D / entity.scale) - (width / 2D);
+				case RIGHT -> maxLength - width - maxLength / 2D;
+			};
+
+			matrices.push();
+			matrices.translate(dX, 0, 0);
+
+			if (entity.backgroundColor != 0 && width > 0) {
+				matrices.push();
+				// Annoyingly, it kept getting rendered backwards.
+				// I thought the vertexes were misordered but that didn't do anything.
+				matrices.multiply(new Quaternionf().rotateLocalY(MathHelper.PI));
+				matrices.translate(-width, 0, -0.025D);
+
+				//drawFillRect(matrices, vertexConsumers, (int) width + 5, (i + 1) * 12 - 2, -5, i * 12 - 2, entity.backgroundColor);
+				matrices.pop();
+			}
+
+
+			textRenderer.draw(entity.lines.get(i), 0, i * 12, entity.color, entity.shadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+
+			matrices.pop();
+		}
+
+		matrices.pop();
+	}
+}

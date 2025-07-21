@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PopupBlock extends WaterloggableGlowcaseBlock {
 	public static final MapCodec<PopupBlock> CODEC = createCodec(PopupBlock::new);
@@ -63,6 +65,13 @@ public class PopupBlock extends WaterloggableGlowcaseBlock {
 			Glowcase.proxy.openPopupBlockViewScreen(pos);
 		}
 		return ActionResult.SUCCESS;
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		textConsumer.accept(Text.translatable("block.glowcase.popup_block.tooltip.0").formatted(Formatting.GRAY));
+		textConsumer.accept(Text.translatable("block.glowcase.generic.tooltip").formatted(Formatting.DARK_GRAY));
+		textConsumer.accept(Text.translatable("block.glowcase.popup_block.tooltip.1").formatted(Formatting.DARK_GRAY));
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package dev.hephaestus.glowcase.item;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.item.component.CollectionComponent;
 import dev.hephaestus.glowcase.util.CollectableStack;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
@@ -81,6 +82,22 @@ public class CollectionCaseItem extends Item implements ScrollableItem {
 				caseStack.set(Glowcase.COLLECTION_COMPONENT.get(), collection);
 			}
 			playScrollSound(player);
+		}
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		super.appendTooltip(stack, context, displayComponent, textConsumer, type);
+
+		CollectionComponent collection = stack.get(Glowcase.COLLECTION_COMPONENT.get());
+		textConsumer.accept(Text.translatable("item.glowcase.collection_case.tooltip.0").formatted(Formatting.GRAY));
+		if (type.isCreative()) textConsumer.accept(Text.translatable("item.glowcase.collection_case.tooltip.creative.0").formatted(Formatting.DARK_GRAY));
+		if (collection != null && !collection.collectables().isEmpty()) {
+			textConsumer.accept(Text.translatable("item.glowcase.collection_case.tooltip.1", collection.collected(), collection.collectables().size()).formatted(Formatting.DARK_PURPLE));
+			for (int i = 0; i < collection.collectables().size(); i++) {
+				CollectableStack collectable = collection.collectables().get(i);
+				textConsumer.accept(collectable.getCollectableName(context.getRegistryLookup(), collection.selected() == i));
+			}
 		}
 	}
 

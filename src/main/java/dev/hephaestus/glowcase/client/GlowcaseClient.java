@@ -16,7 +16,7 @@ import dev.hephaestus.glowcase.client.render.block.entity.RecipeBlockEntityRende
 import dev.hephaestus.glowcase.client.render.block.entity.ScreenBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.SoundPlayerBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.SpriteBlockEntityRenderer;
-import dev.hephaestus.glowcase.client.render.block.entity.TextBlockEntityRendererNewfangled;
+import dev.hephaestus.glowcase.client.render.block.entity.TextBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.item.ItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.NoteItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.TabletItemHandRenderer;
@@ -55,7 +55,7 @@ public class GlowcaseClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Glowcase.proxy = new GlowcaseClientProxy();
 
-		BlockEntityRendererFactories.register(Glowcase.TEXT_BLOCK_ENTITY.get(), TextBlockEntityRendererNewfangled::new);
+		BlockEntityRendererFactories.register(Glowcase.TEXT_BLOCK_ENTITY.get(), TextBlockEntityRenderer::new);
 		BlockEntityRendererFactories.register(Glowcase.HYPERLINK_BLOCK_ENTITY.get(), HyperlinkBlockEntityRenderer::new);
 		BlockEntityRendererFactories.register(Glowcase.CONFIG_LINK_BLOCK_ENTITY.get(), ConfigLinkBlockEntityRenderer::new);
 		BlockEntityRendererFactories.register(Glowcase.ITEM_DISPLAY_BLOCK_ENTITY.get(), ItemDisplayBlockEntityRenderer::new);

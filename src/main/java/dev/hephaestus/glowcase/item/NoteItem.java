@@ -2,6 +2,7 @@ package dev.hephaestus.glowcase.item;
 
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.item.component.NoteComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,6 +15,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class NoteItem extends Item {
 	public NoteItem(Settings settings) {
@@ -45,5 +47,26 @@ public class NoteItem extends Item {
 				return Text.literal(noteComponent.title().get()).setStyle(Style.EMPTY.withItalic(true));
 		}
 		return super.getName(stack);
+	}
+
+	@Override
+	public void appendTooltip(ItemStack itemStack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		boolean signed = false;
+
+		if (itemStack.contains(Glowcase.NOTE_COMPONENT.get())) {
+			NoteComponent noteComponent = itemStack.get(Glowcase.NOTE_COMPONENT.get());
+			assert noteComponent != null;
+
+			if (noteComponent.title().isPresent()) {
+				signed = true;
+				Text author = (noteComponent.author().isPresent()) ? Text.literal(noteComponent.author().get()) : Text.translatable("gui.glowcase.note.anonymous").formatted(Formatting.WHITE);
+
+				textConsumer.accept(Text.translatable("item.glowcase.note.tooltip.0", author).formatted(Formatting.YELLOW));
+			}
+		}
+
+		if (!signed) {
+			textConsumer.accept(Text.translatable("item.glowcase.note.tooltip.1").formatted(Formatting.GRAY));
+		}
 	}
 }

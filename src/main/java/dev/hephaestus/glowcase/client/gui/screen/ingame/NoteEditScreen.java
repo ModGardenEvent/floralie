@@ -249,7 +249,6 @@ public class NoteEditScreen extends TextEditorScreen {
 			context.drawText(textRenderer, Language.getInstance().reorder(text), (int) x, (height/2 - BG_HEIGHT/2 + TXT_OFF_Y) + (textRenderer.fontHeight * i), NoteTextColorResource.TXT_COLOR, false);
 
 			if (overflow && i == currentRow) {
-				// fixme: find equivalents
 //				RenderSystem.enableBlend();
 				for (int j = 0; j < textRenderer.fontHeight; j++) {
 					context.drawTexture(RenderLayer::getGuiTextured,
@@ -356,7 +355,7 @@ public class NoteEditScreen extends TextEditorScreen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.renderBackground(context, mouseX, mouseY, delta);
-		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, BG_WIDTH, BG_HEIGHT, 0, 0, BG_WIDTH, BG_HEIGHT, BG_SIZE, BG_SIZE);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, 0, 0, BG_WIDTH, BG_HEIGHT, BG_SIZE, BG_SIZE);
 	}
 
 	@Override

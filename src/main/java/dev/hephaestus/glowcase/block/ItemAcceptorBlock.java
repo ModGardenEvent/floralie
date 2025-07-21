@@ -13,6 +13,7 @@ import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -41,6 +42,7 @@ import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemAcceptorBlock extends GlowcaseBlock {
 	public static final MapCodec<ItemAcceptorBlock> CODEC = createCodec(ItemAcceptorBlock::new);
@@ -225,6 +227,14 @@ public class ItemAcceptorBlock extends GlowcaseBlock {
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return OUTLINE;
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		textConsumer.accept(Text.translatable("block.glowcase.item_acceptor_block.tooltip.0").formatted(Formatting.GRAY));
+		textConsumer.accept(Text.translatable("block.glowcase.item_acceptor_block.tooltip.1").formatted(Formatting.BLUE));
+		textConsumer.accept(Text.translatable("block.glowcase.item_acceptor_block.tooltip.2").formatted(Formatting.BLUE));
+		textConsumer.accept(Text.translatable("block.glowcase.item_acceptor_block.tooltip.3").formatted(Formatting.DARK_GRAY));
 	}
 
 	@Override

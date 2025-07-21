@@ -185,7 +185,17 @@ public class Glowcase implements ModInitializer {
 		Block block = blockSupplier.get();
 		Item.Settings settings = defaultItemSettings().registryKey(RegistryKey.of(RegistryKeys.ITEM, identifier));
 		seetingsConsumer.accept(settings);
-		BlockItem blockItem = new BlockItem(block, settings.useBlockPrefixedTranslationKey());
+		BlockItem blockItem;
+		if (block instanceof GlowcaseBlock glowcaseBlock) {
+			blockItem = new BlockItem(block, settings.useBlockPrefixedTranslationKey()) {
+				@Override
+				public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+					glowcaseBlock.appendTooltip(stack, context, displayComponent, textConsumer, type);
+				}
+			};
+		} else {
+			blockItem = new BlockItem(block, settings.useBlockPrefixedTranslationKey());
+		}
 
 		return Suppliers.ofInstance(Registry.register(Registries.ITEM, identifier, blockItem));
 	}
