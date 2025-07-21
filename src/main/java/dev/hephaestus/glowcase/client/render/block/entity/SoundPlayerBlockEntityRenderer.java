@@ -16,7 +16,7 @@ public record SoundPlayerBlockEntityRenderer(BlockEntityRendererFactory.Context 
 	@Override
 	public void render(SoundPlayerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
-		if (BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos()))
+		if (BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos(), false))
 			BlockEntityRenderUtil.renderBillboardPlaceholder(entity, ITEM_TEXTURE, 1.0F, matrices, vertexConsumers, context.getRenderDispatcher().camera);
 	}
 }

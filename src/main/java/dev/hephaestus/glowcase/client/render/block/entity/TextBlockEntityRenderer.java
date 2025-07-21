@@ -21,6 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -43,6 +44,9 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 		int overlay,
 		Vec3d cameraPos
 	) {
+		if (entity.lines.getFirst().getString().isBlank() && BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos(), false))
+			BlockEntityRenderUtil.renderBillboardPlaceholder(entity, ITEM_TEXTURE, 1.0F, matrices, vertexConsumers, context.getRenderDispatcher().camera);
+
 		Entity camera = MinecraftClient.getInstance().getCameraEntity();
 		if (camera != null && entity.viewDistance >= 0) {
 			double dx = camera.getX() - (entity.getPos().getX() + 0.5);
