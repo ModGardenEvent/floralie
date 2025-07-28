@@ -1,11 +1,8 @@
 package dev.hephaestus.glowcase.client.gui.widget.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.hephaestus.glowcase.client.gui.screen.ingame.ColorPickerIncludedScreen;
-import dev.hephaestus.glowcase.mixin.client.DrawContextAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -18,7 +15,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 import java.awt.*;
 import java.util.ArrayList;
@@ -256,13 +252,14 @@ public class ColorPickerWidget extends PressableWidget {
 
 	private void sidewaysGradient(DrawContext context, float x, float y, float width, float height, float z, int startColor, int endColor) {
 		RenderLayer layer = RenderLayer.getGui();
-		VertexConsumer vertexConsumer = ((DrawContextAccessor) context).glowcase$getVertexConsumers().getBuffer(layer);
-
-		Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
-		vertexConsumer.vertex(matrix, x, y, z).color(startColor);
-		vertexConsumer.vertex(matrix, x, y + height, z).color(startColor);
-		vertexConsumer.vertex(matrix, x + width, y + height, z).color(endColor);
-		vertexConsumer.vertex(matrix, x + width, y, z).color(endColor);
+		context.draw((vertexConsumerProvider -> {
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(layer);
+			Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
+			vertexConsumer.vertex(matrix, x, y, z).color(startColor);
+			vertexConsumer.vertex(matrix, x, y + height, z).color(startColor);
+			vertexConsumer.vertex(matrix, x + width, y + height, z).color(endColor);
+			vertexConsumer.vertex(matrix, x + width, y, z).color(endColor);
+		}));
 	}
 
 	private void drawPresets(DrawContext context, int mouseX, int mouseY, float delta, int x, int y, int height, int z, int presetSize, int presetsPerLine, int presetPadding) {

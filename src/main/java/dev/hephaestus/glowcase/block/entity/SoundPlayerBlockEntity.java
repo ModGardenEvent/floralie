@@ -97,7 +97,7 @@ public class SoundPlayerBlockEntity extends GlowcaseBlockEntity {
 				.ifPresent(result -> this.offset = result);
 
 		if (tag.contains("volumeSampler")) {
-			final PositionSampler sampler = PositionSampler.getByName(tag.getString("volumeSampler"));
+			final PositionSampler sampler = PositionSampler.getByName(tag.getString("volumeSampler", null));
 			if (sampler != null) {
 				this.volumeSampler = sampler;
 			}
@@ -186,8 +186,9 @@ public class SoundPlayerBlockEntity extends GlowcaseBlockEntity {
 			lookup = Map.copyOf(samplers);
 		}
 
-		public static PositionSampler getByName(Optional<String> value) {
-			return value.map(s -> lookup.get(s.toLowerCase(Locale.ROOT))).orElse(null);
+		public static PositionSampler getByName(String value) {
+			if (value == null) return null;
+			return lookup.get(value.toLowerCase(Locale.ROOT));
 		}
 
 		public abstract Vec3d getPosition(MinecraftClient client);
