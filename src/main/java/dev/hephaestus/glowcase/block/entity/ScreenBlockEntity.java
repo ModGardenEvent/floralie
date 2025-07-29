@@ -112,29 +112,29 @@ public class ScreenBlockEntity extends GlowcaseBlockEntity {
 
 		macaddress = PortUtil.getUuid(nbt, "macaddress");
 
-		width = nbt.getFloat("width");
-		height = nbt.getFloat("height");
+		width = nbt.getFloat("width", 1);
+		height = nbt.getFloat("height", 1);
 
-		renderBackface = nbt.getBoolean("renderBackface");
-		stretch = nbt.getBoolean("stretch");
-		eink = nbt.getBoolean("eink");
+		renderBackface = nbt.getBoolean("renderBackface", false);
+		stretch = nbt.getBoolean("stretch", false);
+		eink = nbt.getBoolean("eink", false);
 
-		xOffset = Offset.fromOffset(nbt.getInt("x_offset"));
-		yOffset = Offset.fromOffset(nbt.getInt("y_offset"));
-		zOffset = Offset.fromOffset(nbt.getInt("z_offset"));
+		xOffset = Offset.fromOffset(nbt.getInt("x_offset", 0));
+		yOffset = Offset.fromOffset(nbt.getInt("y_offset", 0));
+		zOffset = Offset.fromOffset(nbt.getInt("z_offset", 0));
 
-		preciseX = nbt.getFloat("px");
-		preciseY = nbt.getFloat("py");
-		preciseZ = nbt.getFloat("pz");
+		preciseX = nbt.getFloat("px", 0);
+		preciseY = nbt.getFloat("py", 0);
+		preciseZ = nbt.getFloat("pz", 0);
 
-		pitch = nbt.getFloat("pitch");
-		yaw = nbt.getFloat("yaw");
+		pitch = nbt.getFloat("pitch", 0);
+		yaw = nbt.getFloat("yaw", 0);
 
-		url = nbt.getString("url");
-		alt = nbt.getString("alt");
+		url = nbt.getString("url", "");
+		alt = nbt.getString("alt", "");
 
 		// Cache preview before needed for smooth experience
-		preview = nbt.getString("preview");
+		preview = nbt.getString("preview", "");
 		if (this.getWorld() != null && this.getWorld().isClient())
 			GlowcaseClient.screenImageCache.getImage(preview, null);
 

@@ -35,7 +35,7 @@ public class ModMetaUtil {
 			try (InputStream inputStream = Files.newInputStream(path)) {
 				NativeImage image = NativeImage.read(Objects.requireNonNull(inputStream));
 				Validate.validState(image.getHeight() == image.getWidth(), "Must be square icon");
-				NativeImageBackedTexture tex = new NativeImageBackedTexture(image);
+				NativeImageBackedTexture tex = new NativeImageBackedTexture(() -> Integer.toHexString(image.hashCode()), image);
 				modIconCache.put(path, tex);
 				return tex;
 			}

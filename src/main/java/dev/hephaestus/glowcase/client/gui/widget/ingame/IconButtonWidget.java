@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +35,7 @@ public class IconButtonWidget extends ButtonWidget {
 		if(this.hoverIcon != null && this.isMouseOver(mouseX, mouseY)) {
 			drawnIcon = this.hoverIcon;
 		}
-		context.drawGuiTexture(drawnIcon, this.getX(), this.getY(), z, this.iconWidth, this.iconHeight);
+		context.drawGuiTexture(RenderLayer::getGuiTextured, drawnIcon, this.getX(), this.getY(), z, this.iconWidth, this.iconHeight);
 	}
 
 	public void setPosition(int x, int y, int z, int size, int iconSize) {

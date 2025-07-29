@@ -250,11 +250,13 @@ public class ScreenImageCache {
 					width = nativeImage.getWidth();
 					height = nativeImage.getHeight();
 
-					NativeImageBackedTexture nativeTexture = new NativeImageBackedTexture(nativeImage);
+					String imageHash = Integer.toHexString(nativeImage.hashCode());
+					NativeImageBackedTexture nativeTexture = new NativeImageBackedTexture(() -> imageHash, nativeImage);
 
 					// Register image as texture
 					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-					this.texture = textureManager.registerDynamicTexture("glowcase/img", nativeTexture);
+					this.texture = Glowcase.id("glowcase/img", imageHash);
+					textureManager.registerTexture(this.texture, nativeTexture);
 
 					return 200;
 				}).join();

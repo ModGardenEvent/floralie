@@ -65,7 +65,7 @@ public class ItemProviderBlockEntity extends GlowcaseBlockEntity implements Infi
 	@Override
 	public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(tag, registryLookup);
-		if (!this.stack.isEmpty()) tag.put("item", this.stack.encode(registryLookup));
+		if (!this.stack.isEmpty()) tag.put("item", this.stack.toNbt(registryLookup));
 		tag.putString("gives_item", this.givesItem.name());
 		tag.putLong("cooldown", this.cooldown);
 		NbtCompound timesNbt = new NbtCompound();
@@ -77,21 +77,21 @@ public class ItemProviderBlockEntity extends GlowcaseBlockEntity implements Infi
 	@Override
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
-		this.stack = tag.contains("item", NbtElement.COMPOUND_TYPE) ? ItemStack.fromNbt(registryLookup, tag.getCompound("item")).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
+		this.stack = tag.contains("item") ? ItemStack.fromNbt(registryLookup, tag.getCompoundOrEmpty("item")).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
 		if (tag.contains("gives_item")) {
-			this.givesItem = GivesItem.valueOf(tag.getString("gives_item"));
+			this.givesItem = GivesItem.valueOf(tag.getString("gives_item", GivesItem.ALWAYS.name()));
 		} else {
 			this.givesItem = GivesItem.ALWAYS;
 		}
-		this.cooldown = tag.getLong("cooldown");
+		this.cooldown = tag.getLong("cooldown", 0);
 
 		givenTimes.clear();
-		NbtCompound given = tag.getCompound("given_times");
+		NbtCompound given = tag.getCompoundOrEmpty("given_times");
 		for (String key : given.getKeys()) {
-			givenTimes.put(UUID.fromString(key), given.getLong(key));
+			givenTimes.put(UUID.fromString(key), given.getLong(key, 0));
 		}
 
-		this.invisible = tag.getBoolean("invisible");
+		this.invisible = tag.getBoolean("invisible", false);
 	}
 
 	public void cycleGiveType() {

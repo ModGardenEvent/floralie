@@ -3,6 +3,7 @@ package dev.hephaestus.glowcase.item;
 import com.mojang.datafixers.util.Pair;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.block.entity.ScreenBlockEntity;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
@@ -18,6 +19,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static dev.hephaestus.glowcase.block.GlowcaseBlock.canEditGlowcase;
 
@@ -151,5 +153,12 @@ public class TabletItem extends Item {
 	@Override
 	public int getItemBarColor(ItemStack stack) {
 		return 0xFFFFFF;
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		textConsumer.accept(Text.translatable("item.glowcase.tablet.tooltip.0").formatted(Formatting.GRAY));
+		textConsumer.accept(Text.translatable("item.glowcase.tablet.tooltip.1").formatted(Formatting.DARK_GRAY));
+		textConsumer.accept(Text.translatable("item.glowcase.tablet.tooltip.2").formatted(Formatting.DARK_GRAY));
 	}
 }

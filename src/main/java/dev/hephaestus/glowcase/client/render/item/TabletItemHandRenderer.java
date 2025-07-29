@@ -28,7 +28,7 @@ public class TabletItemHandRenderer extends ItemHandRenderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ItemStack stack) {
 		matrices.push();
-		RenderSystem.enableBlend();
+//		RenderSystem.enableBlend();
 
 		// Render background
 

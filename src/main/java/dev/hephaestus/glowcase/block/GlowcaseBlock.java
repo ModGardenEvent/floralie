@@ -12,10 +12,14 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,6 +29,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public abstract class GlowcaseBlock extends BlockWithEntity {
 	protected static final VoxelShape HALF_CUBED = VoxelShapes.cuboid(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
@@ -102,10 +108,20 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 	}
 
 	public static boolean canEditGlowcase(PlayerEntity player, BlockPos pos) {
-		return player != null && player.isCreative() && player.canModifyAt((ServerWorld) player.getWorld(), pos);
+		if (player == null) return false;
+
+		if (player.getWorld() instanceof ServerWorld serverWorld) {
+			return player.isCreative() && player.canModifyAt(serverWorld, pos);
+		}
+
+		return player.isCreative();
 	}
 
-	protected static AbstractBlock.Settings defaultSettings() {
+	@Deprecated
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+	}
+
+	public static AbstractBlock.Settings defaultSettings() {
 		return Settings.create()
 			.nonOpaque()
 			.dropsNothing()

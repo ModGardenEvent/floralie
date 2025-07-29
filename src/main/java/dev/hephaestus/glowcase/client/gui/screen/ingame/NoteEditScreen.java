@@ -249,27 +249,26 @@ public class NoteEditScreen extends TextEditorScreen {
 			context.drawText(textRenderer, Language.getInstance().reorder(text), (int) x, (height/2 - BG_HEIGHT/2 + TXT_OFF_Y) + (textRenderer.fontHeight * i), NoteTextColorResource.TXT_COLOR, false);
 
 			if (overflow && i == currentRow) {
-				// fixme: find equivalents
 //				RenderSystem.enableBlend();
 				for (int j = 0; j < textRenderer.fontHeight; j++) {
-//					context.drawTexture(
-//						TEXTURE,
-//						width/2 - BG_WIDTH/2 + SCREEN_X1,
-//						height/2 - BG_HEIGHT/2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow) + j,
-//						0f,
-//						BG_SIZE - 1,
-//						32,
-//						1
-//					);
-//					context.drawTexture(
-//						TEXTURE,
-//						width/2 + BG_WIDTH/2 + SCREEN_X2 - 32,
-//						height/2 - BG_HEIGHT/2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow) + j,
-//						0,
-//						BG_SIZE - 2,
-//						32,
-//						1
-//					);
+					context.drawTexture(RenderLayer::getGuiTextured,
+						TEXTURE,
+						width/2 - BG_WIDTH/2 + SCREEN_X1,
+						height/2 - BG_HEIGHT/2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow) + j,
+						0f,
+						BG_SIZE - 1,
+						32,
+						1, BG_WIDTH, BG_HEIGHT
+					);
+					context.drawTexture(RenderLayer::getGuiTextured,
+						TEXTURE,
+						width/2 + BG_WIDTH/2 + SCREEN_X2 - 32,
+						height/2 - BG_HEIGHT/2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow) + j,
+						0,
+						BG_SIZE - 2,
+						32,
+						1, BG_WIDTH, BG_HEIGHT
+					);
 				}
 
 				if (x < (width/2f - BG_WIDTH/2f + SCREEN_X1))
@@ -356,7 +355,7 @@ public class NoteEditScreen extends TextEditorScreen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.renderBackground(context, mouseX, mouseY, delta);
-		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, BG_WIDTH, BG_HEIGHT, 0, 0, BG_WIDTH, BG_HEIGHT, BG_SIZE, BG_SIZE);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, 0, 0, BG_WIDTH, BG_HEIGHT, BG_SIZE, BG_SIZE);
 	}
 
 	@Override

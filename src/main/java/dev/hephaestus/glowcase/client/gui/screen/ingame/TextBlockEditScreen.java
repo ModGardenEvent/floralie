@@ -16,11 +16,9 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -245,27 +243,22 @@ public class TextBlockEditScreen extends TextEditorScreen {
 
 				int caretStartY = this.currentRow * 12;
 				int caretEndY = this.currentRow * 12 + 9;
-				if (this.ticksSinceOpened / 6 % 2 == 0 && !this.isFocusedTextActive()) {
-					if (selectionStart < line.length()) {
-						context.fill(startX, caretStartY, startX + 1, caretEndY, 0xCCFFFFFF);
-					} else {
-						context.drawText(client.textRenderer, "_", startX, this.currentRow * 12, 0xFFFFFFFF, false);
-					}
-				}
+
+				int caretColor = 0xCCFFFFFF;
 
 				if (caretStart != caretEnd) {
 					int endX = startX + this.client.textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
-					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-					// fixme: find equivalents
-//					RenderSystem.enableColorLogicOp();
-//					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, caretEndY, 0.0F).color(0, 0, 255, 255);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, caretEndY, 0.0F).color(0, 0, 255, 255);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, caretStartY, 0.0F).color(0, 0, 255, 255);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, caretStartY, 0.0F).color(0, 0, 255, 255);
-//					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-//					RenderSystem.disableColorLogicOp();
+
+					context.fill(startX, caretStartY, endX, caretEndY, ColorHelper.getArgb(255, 224, 224,255));
+
+				}
+
+				if (this.ticksSinceOpened / 6 % 2 == 0 && !this.isFocusedTextActive()) {
+					if (selectionStart < line.length()) {
+						context.fill(startX, caretStartY, startX + 1, caretEndY, caretColor);
+					} else {
+						context.drawText(client.textRenderer, "_", startX, this.currentRow * 12, 0xFFFFFFFF, false);
+					}
 				}
 			}
 

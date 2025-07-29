@@ -85,7 +85,11 @@ public class BlockEntityRenderUtil {
 	}
 
 	public static boolean shouldRenderPlaceholder(BlockPos pos) {
-		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isHolding(stack -> stack.isIn(Glowcase.ITEM_TAG)) && !(MinecraftClient.getInstance().crosshairTarget instanceof BlockHitResult bhr && bhr.getBlockPos().equals(pos));
+		return shouldRenderPlaceholder(pos, true);
+	}
+
+	public static boolean shouldRenderPlaceholder(BlockPos pos, boolean disappearWhenFaced) {
+		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isHolding(stack -> stack.isIn(Glowcase.ITEM_TAG)) && (!disappearWhenFaced || !(MinecraftClient.getInstance().crosshairTarget instanceof BlockHitResult bhr && bhr.getBlockPos().equals(pos)));
 	}
 
 	public static Vec2f getTracking(Entity camera, BlockPos pos, float delta) {

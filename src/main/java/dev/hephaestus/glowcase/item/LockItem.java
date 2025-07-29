@@ -4,6 +4,7 @@ import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.item.component.LockComponent;
 import dev.hephaestus.glowcase.mixin.LockableContainerBlockEntityAccessor;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.Item;
@@ -22,6 +23,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LockItem extends Item {
 	public static final ContainerLock CONTAINER_LOCK = new ContainerLock(
@@ -69,5 +71,12 @@ public class LockItem extends Item {
 		be.markDirty();
 
 		return ActionResult.SUCCESS;
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		super.appendTooltip(stack, context, displayComponent, textConsumer, type);
+
+		textConsumer.accept(Text.translatable("item.glowcase.lock.tooltip.0").formatted(Formatting.GRAY));
 	}
 }

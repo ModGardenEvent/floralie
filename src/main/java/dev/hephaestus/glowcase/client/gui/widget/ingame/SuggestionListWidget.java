@@ -109,10 +109,10 @@ public class SuggestionListWidget<T> extends ClickableWidget {
         
         float blurValue = (float) MinecraftClient.getInstance().options.getMenuBackgroundBlurrinessValue();
         if (blurValue >= 1.0F) {
-            client.gameRenderer.renderBlur(delta);
+            client.gameRenderer.renderBlur();
         }
 
-        client.getFramebuffer().beginWrite(false);
+//        client.getFramebuffer().beginWrite(false);
         context.fill(this.getX(), this.getY(), this.getX() + listWidth, this.getY() + dynamicHeight, 0x90000000);
 
         drawOutline(context, this.getX(), this.getY(), listWidth, dynamicHeight, 0xFFFFFFFF);
@@ -161,9 +161,9 @@ public class SuggestionListWidget<T> extends ClickableWidget {
 
             float blurScrollbar = (float) client.options.getMenuBackgroundBlurrinessValue();
             if (blurScrollbar >= 1.0F) {
-                client.gameRenderer.renderBlur(delta);
+                client.gameRenderer.renderBlur();
             }
-            client.getFramebuffer().beginWrite(false);
+//            client.getFramebuffer().beginWrite(false);
 
             context.fill(sbX, sbY, sbX + scrollbarWidth, sbY + scrollbarHeight, scrollBarBgColor);
             context.disableScissor();
