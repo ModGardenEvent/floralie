@@ -51,10 +51,10 @@ public class PopupBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		this.color = tag.getInt("title", "");
+		this.title = tag.getString("title", "");
 		this.color = tag.getInt("color", 0xFFFFFFFF);
 
-		tag.getString("text_alignment").ifPresent(s -> this.textAlignment = TextBlockEntity.TextAlignment.valueOf(s));
+		this.textAlignment = TextBlockEntity.TextAlignment.valueOf(tag.getString("text_alignment", "center"));
 
 		this.lines = new ArrayList<>();
 		NbtList lines = tag.getListOrEmpty("lines");

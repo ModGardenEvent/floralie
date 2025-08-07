@@ -1,8 +1,9 @@
 package dev.hephaestus.glowcase.client;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import dev.hephaestus.glowcase.Glowcase;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
@@ -10,45 +11,44 @@ import net.minecraft.util.Util;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static net.minecraft.client.render.RenderPhase.ENABLE_LIGHTMAP;
-import static net.minecraft.client.render.RenderPhase.NO_TEXTURE;
+public abstract class GlowcaseRenderLayers extends RenderLayer {
+	public static final Function<Boolean, RenderPipeline> SCREEN_PROGRAM = Util.memoize((culling) -> RenderPipelines.register(
+		RenderPipeline.builder(RenderPipelines.TEXT_SNIPPET, RenderPipelines.FOG_SNIPPET)
+			.withLocation(Glowcase.id("pipeline/screen"))
+			.withVertexShader("core/rendertype_text")
+			.withFragmentShader("core/rendertype_text")
+			.withCull(culling)
+			.withSampler("Sampler0")
+			.withSampler("Sampler2")
+			.withDepthBias(-1.0F, -1.0F)
+			.build()
+	));
 
-// fixme: Don't do this! 1.21.6 removes RenderLayers
-public abstract class GlowcaseRenderLayers {
-	public static RenderPhase.Layering GLOWCASE_POLYGON_OFFSET_LAYERING = new RenderPhase.Layering("glowcase_polygon_offset_layering", () -> {
-		// fixme: what's the equivalent
-//		RenderSystem.polygonOffset(-1, -1.0F);
-//		RenderSystem.enablePolygonOffset();
-	}, () -> {
-//		RenderSystem.polygonOffset(0.0F, 0.0F);
-//		RenderSystem.disablePolygonOffset();
-	});
+	public static final RenderPipeline TEXT_PLATE_PROGRAM = RenderPipelines.register(
+		RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET).withLocation(Glowcase.id("pipeline/text_plate")).withCull(false).build()
+	);
 
 	// Use a custom render layer to render the text plate - mimics DrawableHelper's RenderSystem call
-	public static final RenderLayer TEXT_PLATE = RenderLayer.of(
-		"glowcase_text_plate",
+	public static final RenderLayer TEXT_PLATE = RenderLayer.of("glowcase_text_plate",
 		256,
 		true,
 		true,
-		RenderPipelines.RENDERTYPE_TEXT_BG_SEETHROUGH,
-		RenderLayer.MultiPhaseParameters.builder()
-			.texture(NO_TEXTURE)
-			.build(false)
-	);
+		TEXT_PLATE_PROGRAM,
+		RenderLayer.MultiPhaseParameters.builder().texture(NO_TEXTURE).build(false));
 
 
-	private static final BiFunction<Identifier, Boolean, RenderLayer> SCREEN = Util.memoize((texture, culling) -> RenderLayer.of(
-		"glowcase_screen",
-		786432,
-		true,
-		false,
-		RenderPipelines.RENDERTYPE_TEXT,
-		RenderLayer.MultiPhaseParameters.builder()
-			.texture(new RenderPhase.Texture(texture, TriState.FALSE, false))
-			.lightmap(ENABLE_LIGHTMAP)
-			.layering(GLOWCASE_POLYGON_OFFSET_LAYERING)
-			.build(false)
-	));
+	private static final BiFunction<Identifier, Boolean, RenderLayer> SCREEN = Util.memoize((texture, culling) -> {
+		return RenderLayer.of(
+			"glowcase_screen",
+			786432,
+			false,
+			true,
+			SCREEN_PROGRAM.apply(culling),
+			MultiPhaseParameters.builder()
+				.texture(new Texture(texture, TriState.DEFAULT, false))
+				.lightmap(ENABLE_LIGHTMAP)
+				.build(false));
+	});
 
 	public GlowcaseRenderLayers(String name, int size, boolean hasCrumbling, boolean translucent, Runnable begin, Runnable end) {
 		super(name, size, hasCrumbling, translucent, begin, end);

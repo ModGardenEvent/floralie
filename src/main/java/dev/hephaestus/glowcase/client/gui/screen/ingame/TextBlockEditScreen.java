@@ -16,8 +16,10 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
@@ -252,7 +254,7 @@ public class TextBlockEditScreen extends TextEditorScreen {
 
 				if (caretStart != caretEnd) {
 					int endX = startX + this.client.textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
-					context.fill(startX, caretStartY, endX, caretEndY, ColorHelper.getArgb(255, 224, 224,255));
+					context.fill(RenderLayer.getGuiTextHighlight(), startX, caretStartY, endX, caretStartY + 1, Colors.BLUE);
 				}
 			}
 

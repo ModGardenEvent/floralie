@@ -293,7 +293,7 @@ public record ScreenBlockEntityRenderer(BlockEntityRendererFactory.Context conte
 	}
 
 	@Override
-	public boolean rendersOutsideBoundingBox() {
+	public boolean rendersOutsideBoundingBox(ScreenBlockEntity blockEntity) {
 		return true;
 	}
 

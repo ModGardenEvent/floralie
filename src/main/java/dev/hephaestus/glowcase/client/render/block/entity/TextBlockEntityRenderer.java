@@ -3,39 +3,35 @@ package dev.hephaestus.glowcase.client.render.block.entity;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.util.BlockEntityRenderUtil;
-import dev.hephaestus.glowcase.mixin.client.TextRendererAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.BakedGlyph;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
-public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEntity> {
+public class TextBlockEntityRenderer extends BakedBlockEntityRenderer<TextBlockEntity> {
 	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/text_block.png");
-	private final BlockEntityRendererFactory.Context context;
 	private boolean wasOutOfRange = false;
 
 	public TextBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.context = context;
+		super(context);
 	}
 
 	@Override
-	public void render(
+	public boolean shouldBake(TextBlockEntity entity) {
+		return !entity.lines.isEmpty();
+	}
+
+	@Override
+	public void renderUnbaked(
 		TextBlockEntity entity,
 		float tickProgress,
 		MatrixStack matrices,
@@ -44,9 +40,37 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 		int overlay,
 		Vec3d cameraPos
 	) {
-		if (entity.lines.getFirst().getString().isBlank() && BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos(), false))
-			BlockEntityRenderUtil.renderBillboardPlaceholder(entity, ITEM_TEXTURE, 1.0F, matrices, vertexConsumers, context.getRenderDispatcher().camera);
+		Entity camera = MinecraftClient.getInstance().getCameraEntity();
+		if (camera != null && entity.viewDistance >= 0) {
+			double dx = camera.getX() - (entity.getPos().getX() + 0.5);
+			double dy = camera.getY() - (entity.getPos().getY() + 0.5);
+			double dz = camera.getZ() - (entity.getPos().getZ() + 0.5);
 
+			if ((dx * dx + dy * dy + dz * dz) > (entity.viewDistance * entity.viewDistance)) {
+				if (!wasOutOfRange) {
+					entity.renderDirty = true;
+					wasOutOfRange = true;
+				}
+			} else {
+				if (wasOutOfRange) {
+					entity.renderDirty = true;
+				}
+
+				wasOutOfRange = false;
+			}
+		}
+
+		if (entity.renderDirty) {
+			entity.renderDirty = false;
+			BakedBlockEntityRenderer.Manager.markForRebuild(entity.getPos());
+		}
+
+		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
+		if (entity.lines.stream().allMatch(t -> t.getString().isBlank()) || BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos())) BlockEntityRenderUtil.renderPlaceholderWithBlockRotation(entity, ITEM_TEXTURE, 1.0F, matrices, vertexConsumers, entity.zOffset == TextBlockEntity.ZOffset.CENTER ? 0.01F : entity.zOffset == TextBlockEntity.ZOffset.FRONT ? 0.4F : -0.4F);
+	}
+
+	@Override
+	public void renderBaked(TextBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 		Entity camera = MinecraftClient.getInstance().getCameraEntity();
 		if (camera != null && entity.viewDistance >= 0) {
 			double dx = camera.getX() - (entity.getPos().getX() + 0.5);
@@ -116,9 +140,7 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 				matrices.pop();
 			}
 
-
-			drawer.draw(TextRenderer.GlyphDrawer.drawing(vertexConsumers, matrices.peek().getPositionMatrix(), TextLayerType.NORMAL, LightmapTextureManager.MAX_LIGHT_COORDINATE));
-			//textRenderer.draw(entity.lines.get(i), 0, i * 12, entity.color, entity.shadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+			textRenderer.draw(entity.lines.get(i), 0, i * 12, entity.color, entity.shadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 
 			matrices.pop();
 		}

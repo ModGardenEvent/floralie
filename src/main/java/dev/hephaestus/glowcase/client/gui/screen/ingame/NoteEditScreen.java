@@ -1,7 +1,5 @@
 package dev.hephaestus.glowcase.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.ColorPickerWidget;
@@ -20,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
@@ -332,17 +331,8 @@ public class NoteEditScreen extends TextEditorScreen {
 
 			if (caretStart != caretEnd) {
 				int endX = startX + textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 				// fixme: find equivalents
-//				RenderSystem.enableColorLogicOp();
-//				RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-				bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, startY + caretLength, 0.0F).color(0, 0, 255, 255);
-				bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, startY + caretLength, 0.0F).color(0, 0, 255, 255);
-				bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, startY, 0.0F).color(0, 0, 255, 255);
-				bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, startY, 0.0F).color(0, 0, 255, 255);
-//				BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-//				RenderSystem.disableColorLogicOp();
+				context.fill(RenderLayer.getGuiTextHighlight(), startX, caretStartY, endX, caretStartY + 9, Colors.BLUE);
 			}
 		}
 

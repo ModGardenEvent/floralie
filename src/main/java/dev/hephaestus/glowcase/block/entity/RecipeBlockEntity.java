@@ -59,7 +59,7 @@ public class RecipeBlockEntity extends GlowcaseBlockEntity {
 		super.readNbt(tag, registryLookup);
 
 		this.recipe = tag.getString("recipe", "diamond_sword");
-		this.zOffset = TextBlockEntity.ZOffset.valueOf(tag.getString("z_offset", "center");
+		this.zOffset = TextBlockEntity.ZOffset.valueOf(tag.getString("z_offset", "center"));
 		this.rotationX = tag.getFloat("rotationX", 0);
 		this.rotationY = tag.getFloat("rotationY", 0);
 	}

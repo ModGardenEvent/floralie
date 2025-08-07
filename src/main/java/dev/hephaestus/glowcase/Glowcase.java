@@ -121,7 +121,6 @@ public class Glowcase implements ModInitializer {
 	public static final Supplier<BlockItem> ITEM_ACCEPTOR_BLOCK_ITEM = registerBlockItem("item_acceptor_block", ITEM_ACCEPTOR_BLOCK);
 	public static final Supplier<BlockEntityType<ItemAcceptorBlockEntity>> ITEM_ACCEPTOR_BLOCK_ENTITY = registerBlockEntity("item_acceptor_block", () -> FabricBlockEntityTypeBuilder.create(ItemAcceptorBlockEntity::new, ITEM_ACCEPTOR_BLOCK.get()).build(null));
 
-	public static final Supplier<ComponentType<LockComponent>> LOCK_COMPONENT = registerComponent("lock", () -> LockComponent.TYPE);
 	public static final Supplier<Item> LOCK_ITEM = registerItem("lock", LockItem::new);
 
 	public static final Supplier<ComponentType<CollectionComponent>> COLLECTION_COMPONENT = registerComponent("collection", () -> CollectionComponent.TYPE);

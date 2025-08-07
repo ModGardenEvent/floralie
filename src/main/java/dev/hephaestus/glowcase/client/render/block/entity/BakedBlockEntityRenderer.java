@@ -1,16 +1,17 @@
 package dev.hephaestus.glowcase.client.render.block.entity;
 
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.buffers.BufferType;
+import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
-import dev.hephaestus.glowcase.mixin.client.GameRendererAccessor;
+import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.mixin.client.MultiPhaseRenderLayerAccessor;
 import dev.hephaestus.glowcase.mixin.client.RenderLayerMultiPhaseParametersAccessor;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
@@ -23,12 +24,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gl.ScissorState;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.chunk.Buffers;
-import net.minecraft.client.render.fog.FogRenderer;
+import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -139,7 +138,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 		private static final Logger LOGGER = LogUtils.getLogger();
 
 		private static class RegionBuffer {
-			private final Map<RenderLayer, Buffers> layerBuffers = new Reference2ReferenceOpenHashMap<>();
+			private final Map<RenderLayer, ChunkBuilder.Buffers> layerBuffers = new Reference2ReferenceOpenHashMap<>();
 			private final Set<RenderLayer> uploadedLayers = new ObjectOpenHashSet<>();
 
 			@SuppressWarnings("DataFlowIssue")
@@ -159,65 +158,56 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				}
 
 				layer.startDrawing();
-				GpuBufferSlice gpuBufferSlice = RenderSystem.getDynamicUniforms()
-					.write(
-						matrices.peek().getPositionMatrix(),
-						new Vector4f(1.0F, 1.0F, 1.0F, 1.0F),
-						RenderSystem.getModelOffset(),
-						RenderSystem.getTextureMatrix(),
-						RenderSystem.getShaderLineWidth()
-					);
 
-				try (RenderPass renderPass = RenderSystem.getDevice()
-					.createCommandEncoder()
-					.createRenderPass(
-						() -> "Glowcase baked BER section layers",
-						framebuffer.getColorAttachmentView(),
-						OptionalInt.empty(),
-						framebuffer.getDepthAttachmentView(),
-						OptionalDouble.empty()
-					)) {
-					Buffers buffers = layerBuffers.get(layer);
+				BufferBuilder bufferBuilder = Tessellator.getInstance()
+					.begin(pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
 
-					GpuBuffer indexBuffer;
-					VertexFormat.IndexType indexType;
-					if (buffers.getIndexBuffer() == null) {
-						RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
-						indexBuffer = shapeIndexBuffer.getIndexBuffer(buffers.getIndexCount());
-						indexType = shapeIndexBuffer.getIndexType();
-					} else {
-						indexBuffer = buffers.getIndexBuffer();
-						indexType = buffers.getIndexType();
-					}
+				try (BuiltBuffer buffer = bufferBuilder.endNullable()) {
+					ByteBuffer byteBuf = buffer.getBuffer();
+					matrices.push();
+					RenderSystem.getDevice().createCommandEncoder()
+						.writeToBuffer(RenderSystem.getQuadVertexBuffer(), byteBuf, 0);
 
-					ScissorState scissorState = RenderSystem.getScissorStateForRenderTypeDraws();
-					if (scissorState.method_72091()) {
-						renderPass.enableScissor(scissorState.method_72092(), scissorState.method_72093(), scissorState.method_72094(), scissorState.method_72095());
-					}
-
-					for (int j = 0; j < 12; j++) {
-						GpuTextureView gpuTextureView3 = RenderSystem.getShaderTexture(j);
-						if (gpuTextureView3 != null) {
-							renderPass.bindSampler("Sampler" + j, gpuTextureView3);
+					try (GpuBuffer vertexBuffer = pipeline.getVertexFormat().uploadImmediateVertexBuffer(buffer.getBuffer());
+						 RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder()
+							 .createRenderPass(
+								 framebuffer.getColorAttachment(),
+								 OptionalInt.empty(),
+								 framebuffer.getDepthAttachment(),
+								 OptionalDouble.empty()
+							 )) {
+						ChunkBuilder.Buffers buffers = layerBuffers.get(layer);
+						GpuBuffer indexBuffer;
+						VertexFormat.IndexType indexType;
+						if (buffers.getIndexBuffer() == null) {
+							RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
+							indexBuffer = shapeIndexBuffer.getIndexBuffer(buffers.getIndexCount());
+							indexType = shapeIndexBuffer.getIndexType();
+						} else {
+							indexBuffer = buffers.getIndexBuffer();
+							indexType = buffers.getIndexType();
 						}
+						renderPass.setPipeline(pipeline);
+						renderPass.setVertexBuffer(0, vertexBuffer);
+						if (RenderSystem.SCISSOR_STATE.isEnabled()) {
+							renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
+						}
+
+						for (int i = 0; i < 12; i++) {
+							GpuTexture gpuTexture = RenderSystem.getShaderTexture(i);
+							if (gpuTexture != null) {
+								renderPass.bindSampler("Sampler" + i, gpuTexture);
+							}
+						}
+
+						renderPass.setIndexBuffer(indexBuffer, indexType);
+						renderPass.drawIndexed(0, buffer.getDrawParameters().indexCount());
 					}
-
-					renderPass.setPipeline(pipeline);
-					renderPass.setUniform("DynamicTransforms", gpuBufferSlice);
-					renderPass.setVertexBuffer(0, buffers.getVertexBuffer());
-					renderPass.setIndexBuffer(indexBuffer, indexType);
-					RenderSystem.bindDefaultUniforms(renderPass);
-
-					renderPass.drawIndexed(0, 0, buffers.getIndexCount(), 1);
+					matrices.pop();
+					layer.endDrawing();
+				} catch (Exception ex) {
+					Glowcase.LOGGER.error("", ex);
 				}
-				layer.endDrawing();
-
-				//VertexBuffer buf = layerBuffers.get(layer);
-				//buf.bind();
-				//layer.startDrawing();
-				//buf.draw(matrices.peek().getPositionMatrix(), projectionMatrix, RenderSystem.getShader());
-				//layer.endDrawing();
-				//VertexBuffer.unbind();
 			}
 
 			public void upload(RenderLayer layer, BufferBuilder newBuf) {
@@ -225,7 +215,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 					if (buffer == null) return;
 
 					CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
-					Buffers oldBuffers = this.layerBuffers.get(layer);
+					ChunkBuilder.Buffers oldBuffers = this.layerBuffers.get(layer);
 					if (oldBuffers != null) {
 						if (oldBuffers.getVertexBuffer().size() < buffer.getBuffer().remaining()) {
 							oldBuffers.getVertexBuffer().close();
@@ -233,19 +223,20 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 								RenderSystem.getDevice()
 									.createBuffer(
 										() -> "Glowcase Region vertex buffer - layer: " + layer.getName(),
-										GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
+										BufferType.VERTICES,
+										BufferUsage.STATIC_WRITE,
 										buffer.getBuffer()
 									)
 							);
 						} else if (!oldBuffers.getVertexBuffer().isClosed()) {
-							commandEncoder.writeToBuffer(oldBuffers.getVertexBuffer().slice(), buffer.getBuffer());
+							commandEncoder.writeToBuffer(oldBuffers.getVertexBuffer(), buffer.getBuffer(), 0);
 						}
 
 						ByteBuffer byteBuffer = buffer.getSortedBuffer();
 						if (byteBuffer != null) {
 							if (oldBuffers.getIndexBuffer() != null && oldBuffers.getIndexBuffer().size() >= byteBuffer.remaining()) {
 								if (!oldBuffers.getIndexBuffer().isClosed()) {
-									commandEncoder.writeToBuffer(oldBuffers.getIndexBuffer().slice(), byteBuffer);
+									commandEncoder.writeToBuffer(oldBuffers.getIndexBuffer(), byteBuffer, 0);
 								}
 							} else {
 								if (oldBuffers.getIndexBuffer() != null) {
@@ -256,7 +247,8 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 									RenderSystem.getDevice()
 										.createBuffer(
 											() -> "Glowcase Region index buffer - layer: " + layer.getName(),
-											GpuBuffer.USAGE_INDEX | GpuBuffer.USAGE_COPY_DST,
+											BufferType.VERTICES,
+											BufferUsage.STATIC_WRITE,
 											byteBuffer
 										)
 								);
@@ -272,7 +264,8 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 						GpuBuffer vertexBuffer = RenderSystem.getDevice()
 							.createBuffer(
 								() -> "Glowcase Region vertex buffer - layer: " + layer.getName(),
-								GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
+								BufferType.VERTICES,
+								BufferUsage.STATIC_WRITE,
 								buffer.getBuffer()
 							);
 						ByteBuffer sortedBuffer = buffer.getSortedBuffer();
@@ -280,11 +273,12 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 							? RenderSystem.getDevice()
 							.createBuffer(
 								() -> "Glowcase Region index buffer - layer: " + layer.getName(),
-								GpuBuffer.USAGE_INDEX | GpuBuffer.USAGE_COPY_DST,
+								BufferType.VERTICES,
+								BufferUsage.STATIC_WRITE,
 								sortedBuffer
 							)
 							: null;
-						this.layerBuffers.put(layer, new Buffers(vertexBuffer, indexBuffer, buffer.getDrawParameters().indexCount(), buffer.getDrawParameters().indexType()));
+						this.layerBuffers.put(layer, new ChunkBuilder.Buffers(vertexBuffer, indexBuffer, buffer.getDrawParameters().indexCount(), buffer.getDrawParameters().indexType()));
 					}
 
 					this.uploadedLayers.add(layer);
@@ -292,7 +286,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 			}
 
 			public void reset() {
-				layerBuffers.values().forEach(Buffers::close);
+				layerBuffers.values().forEach(ChunkBuilder.Buffers::close);
 				layerBuffers.clear();
 				uploadedLayers.clear();
 			}
@@ -393,8 +387,13 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				 * Set the fog end to an extremely high value, this is a total hack but.
 				 * It's needed to make fog not bleed into text blocks
 				 */
-				GpuBufferSlice originalFog = RenderSystem.getShaderFog();
-				RenderSystem.setShaderFog(((GameRendererAccessor) wrc.gameRenderer()).getFogRenderer().getFogBuffer(FogRenderer.FogType.NONE));
+				Fog originalFog = RenderSystem.getShaderFog();
+
+				float tickProgress = wrc.tickCounter().getTickProgress(false);
+				Vector4f fogColor = BackgroundRenderer.getFogColor(wrc.camera(), tickProgress, wrc.world(), wrc.gameRenderer().getClient().options.getClampedViewDistance(), wrc.gameRenderer().getSkyDarkness(tickProgress));
+				Fog modifiedFog = new Fog(0.0F, 0.0F, FogShape.CYLINDER, fogColor.x, fogColor.y, fogColor.z, fogColor.w);
+
+				RenderSystem.setShaderFog(modifiedFog);
 				// Iterate over all RegionBuffers, render visible and remove non-visible RegionBuffers
 				MatrixStack matrices = wrc.matrixStack();
 				matrices.push();

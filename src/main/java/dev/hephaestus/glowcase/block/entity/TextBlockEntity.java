@@ -1,5 +1,6 @@
 package dev.hephaestus.glowcase.block.entity;
 
+import com.mojang.serialization.Codec;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.client.util.ColorUtil;
 import eu.pb4.placeholders.api.ParserContext;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -75,7 +77,7 @@ public class TextBlockEntity extends GlowcaseBlockEntity {
 		this.shadow = tag.getBoolean("shadow", true);
 		this.textAlignment = TextAlignment.valueOf(tag.getString("text_alignment", "0"));
 		this.zOffset = ZOffset.valueOf(tag.getString("z_offset", "0"));
-		this.viewDistance = tag.getFloat("viewDistance", -1.0F)
+		this.viewDistance = tag.getFloat("viewDistance", -1.0F);
 
 		this.lines = new ArrayList<>();
 		NbtList lines = tag.getListOrEmpty("lines");

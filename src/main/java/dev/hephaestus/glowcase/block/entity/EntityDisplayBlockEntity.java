@@ -29,7 +29,7 @@ public class EntityDisplayBlockEntity extends DisplayBlockEntity implements Stac
 
 	@Override
 	public boolean matchesStack(ItemStack stack) {
-		return (stack.isEmpty() && displayEntity == null) || (stack.getItem() instanceof SpawnEggItem eggItem && eggItem.isOfSameEntityType(stack, entityType));
+		return (stack.isEmpty() && displayEntity == null) || (stack.getItem() instanceof SpawnEggItem eggItem && eggItem.isOfSameEntityType(world.getRegistryManager(), stack, entityType));
 	}
 
 	@Override

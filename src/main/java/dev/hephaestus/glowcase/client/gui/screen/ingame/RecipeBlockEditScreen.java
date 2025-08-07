@@ -7,8 +7,6 @@ import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.GlowcaseClient;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.SuggestionListWidget;
 import dev.hephaestus.glowcase.packet.C2SEditRecipeBlock;
-import dev.hephaestus.glowcase.client.util.EmiClientUtils;
-import dev.hephaestus.glowcase.util.EmiUtils;
 import dev.hephaestus.glowcase.util.RequiresEmiLoaded;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;

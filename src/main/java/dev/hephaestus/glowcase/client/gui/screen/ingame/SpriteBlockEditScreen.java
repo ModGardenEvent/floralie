@@ -99,7 +99,8 @@ public class SpriteBlockEditScreen extends GlowcaseScreen {
 		ResourceManager resourceManager = this.client.getResourceManager();
 		validSprites = allValidSprites(resourceManager);
 
-		suggestionWidget = SuggestionListWidget.forTextFieldWithStaticSuggestions(spriteWidget, client.textRenderer, validSprites, Function.identity());
+		suggestionWidget = new SuggestionListWidget<>(this.client.textRenderer, spriteWidget.getX(), spriteWidget.getY() + spriteWidget.getHeight() + 5, spriteWidget.getWidth(), 100, 10, 4, 5,
+			(suggestion) -> spriteWidget.setText(suggestion), s -> s);
 	}
 
 	/**

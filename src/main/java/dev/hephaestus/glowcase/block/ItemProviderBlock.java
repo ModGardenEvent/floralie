@@ -41,6 +41,10 @@ public class ItemProviderBlock extends StackInteractableBlock {
 		this(defaultSettings());
 	}
 
+	public ItemProviderBlock(Block.Settings blockSettings) {
+		super(blockSettings);
+	}
+
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		super.appendProperties(builder);

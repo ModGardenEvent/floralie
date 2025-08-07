@@ -11,11 +11,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -147,14 +149,7 @@ public class PopupBlockEditScreen extends GlowcaseScreen {
 					// fixme: find equivalents
 					Tessellator tessellator = Tessellator.getInstance();
 					BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-//					RenderSystem.enableColorLogicOp();
-//					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, caretEndY, 0.0F).color(0, 0, 255, 255);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, caretEndY, 0.0F).color(0, 0, 255, 255);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), endX, caretStartY, 0.0F).color(0, 0, 255, 255);
-					bufferBuilder.vertex(context.getMatrices().peek().getPositionMatrix(), startX, caretStartY, 0.0F).color(0, 0, 255, 255);
-//					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-//					RenderSystem.disableColorLogicOp();
+					context.fill(RenderLayer.getGuiTextHighlight(), startX, caretStartY, endX, caretStartY + 9, Colors.BLUE);
 				}
 			}
 

@@ -15,10 +15,9 @@ public class PopupBlockViewScreen extends GlowcaseScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.client != null) {
 			super.render(context, mouseX, mouseY, delta);
-			context.applyBlur();
 
-			context.getMatrices().pushMatrix();
-			context.getMatrices().translate(0, 40 + 2 * this.width / 100F);
+			context.getMatrices().push();
+			context.getMatrices().translate(0, 40 + 2 * this.width / 100F, 0);
 			for (int i = 0; i < this.popupBlockEntity.lines.size(); ++i) {
 				var text = this.popupBlockEntity.lines.get(i);
 
@@ -30,7 +29,7 @@ public class PopupBlockViewScreen extends GlowcaseScreen {
 				}
 			}
 
-			context.getMatrices().popMatrix();
+			context.getMatrices().pop();
 		}
 	}
 }

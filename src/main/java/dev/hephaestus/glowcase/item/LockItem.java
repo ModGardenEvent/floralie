@@ -2,6 +2,7 @@ package dev.hephaestus.glowcase.item;
 
 import dev.hephaestus.glowcase.mixin.LockableContainerBlockEntityAccessor;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.Item;

@@ -126,7 +126,8 @@ public class SoundPlayerBlockEditScreen extends GlowcaseScreen {
 			.map(Identifier::toString)
 			.collect(Collectors.toList());
 
-		suggestionWidget = SuggestionListWidget.forTextFieldWithStaticSuggestions(soundId, client.textRenderer, validSounds, Function.identity());
+		suggestionWidget = new SuggestionListWidget<>(this.client.textRenderer, soundId.getX(), soundId.getY() + soundId.getHeight() + 5, soundId.getWidth(), 100, 10, 4, 5,
+			(suggestion) -> soundId.setText(suggestion), s -> s);
 	}
 
 	@Override

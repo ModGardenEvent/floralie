@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
@@ -15,6 +17,8 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 
 public class SuggestionListWidget<T> extends ClickableWidget {
+	public static final Framebuffer FRAMEBUFFER = new SimpleFramebuffer("Glowcase Suggestions", 1, 1, false);
+
     private final TextRenderer textRenderer;
     private final MinecraftClient client;
 
@@ -51,21 +55,6 @@ public class SuggestionListWidget<T> extends ClickableWidget {
 		this.characterWidth = 1;
 		setWidth(width);
     }
-
-	public static <T> SuggestionListWidget<T> forTextField(TextFieldWidget textField, TextRenderer textRenderer, Function<T, String> toStringFunction) {
-		return new SuggestionListWidget<>(textRenderer, textField.getX(), textField.getY() + textField.getHeight() + 5, textField.getWidth(), 100, 10, 4, 5,
-			a -> textField.setText(toStringFunction.apply(a)), toStringFunction);
-	}
-
-	public static <T> SuggestionListWidget<T> forTextFieldWithStaticSuggestions(TextFieldWidget textField, TextRenderer textRenderer, List<T> suggestions, Function<T, String> toStringFunction) {
-		var suggestionWidget = forTextField(textField, textRenderer, toStringFunction);
-
-		textField.setChangedListener((text) -> {
-			suggestionWidget.updateSuggestions(suggestions, text);
-		});
-
-		return suggestionWidget;
-	}
 
 	@Override
 	public void setWidth(int width) {
@@ -114,6 +103,7 @@ public class SuggestionListWidget<T> extends ClickableWidget {
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, 1);
 
+		int bgColor = 0x90000000;
         int adjustedLineHeight = baseLineHeight + padding * 2;
         int rows = Math.min(suggestions.size(), maxRows);
         int dynamicHeight = rows * adjustedLineHeight;
@@ -178,7 +168,7 @@ public class SuggestionListWidget<T> extends ClickableWidget {
                 client.gameRenderer.renderBlur();
             }
 
-            context.fill(sbX, sbY, sbX + scrollbarWidth, sbY + scrollbarHeight, scrollBarBgColor);
+			context.fill(x, y, x + listWidth, y + dynamicHeight, bgColor);
             context.disableScissor();
 
             drawOutline(context, sbX, y, scrollbarWidth, dynamicHeight, 0xFFFFFFFF);

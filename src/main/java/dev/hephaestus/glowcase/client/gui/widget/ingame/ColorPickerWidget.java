@@ -245,12 +245,12 @@ public class ColorPickerWidget extends PressableWidget {
 		drawOutline(context, satLightThumbX - 4, satLightThumbY - 4, 8, 8, z + 2, Color.white);
 	}
 
-	private void drawOutline(DrawContext context, int x, int y, int width, int height, Color outlineColor) {
+	private void drawOutline(DrawContext context, int x, int y, int width, int height, int z, Color outlineColor) {
 		int color = outlineColor.getRGB();
-		context.fill(x, y, x + width, y + 1, color);
-		context.fill(x, y, x + 1, y + height, color);
-		context.fill(x + width, y, x + width - 1, y + height, color);
-		context.fill(x, y + height, x + width, y + height - 1, color);
+		context.fill(x, y, x + width, y + 1, z, color);
+		context.fill(x, y, x + 1, y + height, z, color);
+		context.fill(x + width, y, x + width - 1, y + height, z, color);
+		context.fill(x, y + height, x + width, y + height - 1, z, color);
 	}
 
 	private void sidewaysGradient(DrawContext context, float x, float y, float width, float height, float z, int startColor, int endColor) {
