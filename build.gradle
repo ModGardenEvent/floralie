@@ -53,6 +53,12 @@ dependencies {
 	modLocalRuntime libs.modmenu
 }
 
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
+}
+
 processResources {
 	final Map<String, String> meta = [
 		version       : version,
