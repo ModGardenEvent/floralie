@@ -140,7 +140,18 @@ public class TextBlockEntityRenderer extends BakedBlockEntityRenderer<TextBlockE
 				matrices.pop();
 			}
 
-			textRenderer.draw(entity.lines.get(i), 0, i * 12, entity.color, entity.shadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+			textRenderer.draw(
+				entity.lines.get(i),
+				0,
+				i * 12,
+				entity.color,
+				entity.shadow,
+				matrices.peek().getPositionMatrix(),
+				vertexConsumers,
+				TextRenderer.TextLayerType.NORMAL,
+				0,
+				LightmapTextureManager.MAX_LIGHT_COORDINATE
+			);
 
 			matrices.pop();
 		}
