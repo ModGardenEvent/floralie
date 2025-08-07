@@ -11,7 +11,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
-import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.mixin.client.MultiPhaseRenderLayerAccessor;
 import dev.hephaestus.glowcase.mixin.client.RenderLayerMultiPhaseParametersAccessor;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
@@ -35,6 +34,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 
@@ -93,7 +94,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 
 			RenderRegionPos that = (RenderRegionPos) o;
 			return x == that.x &&
-				   z == that.z;
+				z == that.z;
 		}
 
 		@Override
@@ -143,11 +144,14 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 
 			@SuppressWarnings("DataFlowIssue")
 			public void render(RenderLayer layer, MatrixStack matrices) {
-				Framebuffer framebuffer;
+				Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+				matrix4fStack.pushMatrix();
+				matrix4fStack.set(matrices.peek().getPositionMatrix());
+				Framebuffer frameBuffer;
 				if (layer instanceof RenderLayer.MultiPhase) {
-					framebuffer = ((RenderLayerMultiPhaseParametersAccessor) (Object) ((MultiPhaseRenderLayerAccessor) layer).getPhases()).getTarget().get();
+					frameBuffer = ((RenderLayerMultiPhaseParametersAccessor) (Object) ((MultiPhaseRenderLayerAccessor) layer).getPhases()).getTarget().get();
 				} else {
-					framebuffer = MinecraftClient.getInstance().getFramebuffer();
+					frameBuffer = layer.getTarget();
 				}
 
 				RenderPipeline pipeline;
@@ -158,56 +162,45 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				}
 
 				layer.startDrawing();
+				try (
+					RenderPass renderPass = RenderSystem.getDevice()
+						.createCommandEncoder()
+						.createRenderPass(
+							frameBuffer.getColorAttachment(),
+							OptionalInt.empty(),
+							frameBuffer.useDepthAttachment ? frameBuffer.getDepthAttachment() : null,
+							OptionalDouble.empty()
+						)
+				) {
+					ChunkBuilder.Buffers buffer = layerBuffers.get(layer);
 
-				BufferBuilder bufferBuilder = Tessellator.getInstance()
-					.begin(pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
-
-				try (BuiltBuffer buffer = bufferBuilder.endNullable()) {
-					ByteBuffer byteBuf = buffer.getBuffer();
-					matrices.push();
-					RenderSystem.getDevice().createCommandEncoder()
-						.writeToBuffer(RenderSystem.getQuadVertexBuffer(), byteBuf, 0);
-
-					try (GpuBuffer vertexBuffer = pipeline.getVertexFormat().uploadImmediateVertexBuffer(buffer.getBuffer());
-						 RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder()
-							 .createRenderPass(
-								 framebuffer.getColorAttachment(),
-								 OptionalInt.empty(),
-								 framebuffer.getDepthAttachment(),
-								 OptionalDouble.empty()
-							 )) {
-						ChunkBuilder.Buffers buffers = layerBuffers.get(layer);
-						GpuBuffer indexBuffer;
-						VertexFormat.IndexType indexType;
-						if (buffers.getIndexBuffer() == null) {
-							RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
-							indexBuffer = shapeIndexBuffer.getIndexBuffer(buffers.getIndexCount());
-							indexType = shapeIndexBuffer.getIndexType();
-						} else {
-							indexBuffer = buffers.getIndexBuffer();
-							indexType = buffers.getIndexType();
-						}
-						renderPass.setPipeline(pipeline);
-						renderPass.setVertexBuffer(0, vertexBuffer);
-						if (RenderSystem.SCISSOR_STATE.isEnabled()) {
-							renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
-						}
-
-						for (int i = 0; i < 12; i++) {
-							GpuTexture gpuTexture = RenderSystem.getShaderTexture(i);
-							if (gpuTexture != null) {
-								renderPass.bindSampler("Sampler" + i, gpuTexture);
-							}
-						}
-
-						renderPass.setIndexBuffer(indexBuffer, indexType);
-						renderPass.drawIndexed(0, buffer.getDrawParameters().indexCount());
+					GpuBuffer indexBuffer;
+					VertexFormat.IndexType indexType;
+					if (buffer.getIndexBuffer() == null) {
+						RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
+						indexBuffer = shapeIndexBuffer.getIndexBuffer(buffer.getIndexCount());
+						indexType = shapeIndexBuffer.getIndexType();
+					} else {
+						indexBuffer = buffer.getIndexBuffer();
+						indexType = buffer.getIndexType();
 					}
-					matrices.pop();
-					layer.endDrawing();
-				} catch (Exception ex) {
-					Glowcase.LOGGER.error("", ex);
+					renderPass.setPipeline(pipeline);
+					renderPass.setVertexBuffer(0, buffer.getVertexBuffer());
+					renderPass.setIndexBuffer(indexBuffer, indexType);
+					if (RenderSystem.SCISSOR_STATE.isEnabled()) {
+						renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
+					}
+
+					for (int i = 0; i < 12; i++) {
+						GpuTexture gpuTexture = RenderSystem.getShaderTexture(i);
+						if (gpuTexture != null) {
+							renderPass.bindSampler("Sampler" + i, gpuTexture);
+						}
+					}
+					renderPass.drawIndexed(0, buffer.getIndexCount());
 				}
+				layer.endDrawing();
+				matrix4fStack.popMatrix();
 			}
 
 			public void upload(RenderLayer layer, BufferBuilder newBuf) {
@@ -388,12 +381,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				 * It's needed to make fog not bleed into text blocks
 				 */
 				Fog originalFog = RenderSystem.getShaderFog();
-
-				float tickProgress = wrc.tickCounter().getTickProgress(false);
-				Vector4f fogColor = BackgroundRenderer.getFogColor(wrc.camera(), tickProgress, wrc.world(), wrc.gameRenderer().getClient().options.getClampedViewDistance(), wrc.gameRenderer().getSkyDarkness(tickProgress));
-				Fog modifiedFog = new Fog(0.0F, 0.0F, FogShape.CYLINDER, fogColor.x, fogColor.y, fogColor.z, fogColor.w);
-
-				RenderSystem.setShaderFog(modifiedFog);
+				RenderSystem.setShaderFog(Fog.DUMMY);
 				// Iterate over all RegionBuffers, render visible and remove non-visible RegionBuffers
 				MatrixStack matrices = wrc.matrixStack();
 				matrices.push();
@@ -422,8 +410,6 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 
 				profiler.pop();
 			}
-
-			//RenderSystem.setShaderColor(1, 1, 1, 1);
 
 			profiler.pop();
 		}
