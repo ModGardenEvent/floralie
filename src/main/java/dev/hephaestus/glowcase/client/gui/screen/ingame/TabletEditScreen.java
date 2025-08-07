@@ -41,15 +41,19 @@ public class TabletEditScreen extends GlowcaseScreen {
 
 	// The data to be manipulated
 	private int current;
-	@Nullable private Pair<UUID, BlockPos> screen_pos;
+	@Nullable
+	private Pair<UUID, BlockPos> screen_pos;
 	private final ArrayList<Pair<String, String>> slides;
 
 	private boolean slide_dirty = false;
 
 	// Currently shown pictures
-	@Nullable private ScreenTexture previous_slide;
-	@Nullable private ScreenTexture current_slide;
-	@Nullable private ScreenTexture next_slide;
+	@Nullable
+	private ScreenTexture previous_slide;
+	@Nullable
+	private ScreenTexture current_slide;
+	@Nullable
+	private ScreenTexture next_slide;
 
 	// Widgets
 	private TextWidget progressText;
@@ -73,7 +77,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 		super.init();
 		if (this.client == null) return;
 
-		this.progressText = new TextWidget(width/2 - BG_WIDTH/2 + 5, height/2 - BG_HEIGHT/2 + 5, (int) (BG_WIDTH*.2), this.client.textRenderer.fontHeight,
+		this.progressText = new TextWidget(width / 2 - BG_WIDTH / 2 + 5, height / 2 - BG_HEIGHT / 2 + 5, (int) (BG_WIDTH * .2), this.client.textRenderer.fontHeight,
 			Text.empty(), this.client.textRenderer)
 			.setTextColor(TXT_COLOR)
 			.alignLeft();
@@ -81,25 +85,28 @@ public class TabletEditScreen extends GlowcaseScreen {
 		Text linkedText = (screen_pos == null) ? Text.translatable("gui.glowcase.tablet.not_linked")
 			: Text.translatable("gui.glowcase.tablet.linked", screen_pos.getSecond().toShortString());
 
-		TextWidget linkedTextWidget = new TextWidget(width/2 - BG_WIDTH/2 + 7 + (int) (BG_WIDTH*.2), height/2 - BG_HEIGHT/2 + 5, (int) (BG_WIDTH*.8) - 13, this.client.textRenderer.fontHeight,
+		TextWidget linkedTextWidget = new TextWidget(width / 2 - BG_WIDTH / 2 + 7 + (int) (BG_WIDTH * .2), height / 2 - BG_HEIGHT / 2 + 5, (int) (BG_WIDTH * .8) - 13, this.client.textRenderer.fontHeight,
 			linkedText, this.client.textRenderer)
 			.setTextColor(TXT_COLOR)
 			.alignRight();
 
-		this.urlEntryWidget = new TextFieldWidget(this.client.textRenderer, width/2 - BG_WIDTH/2 + 5, height/2 + 30 - 1, BG_WIDTH - 10 - 55, 20, Text.empty());
+		this.urlEntryWidget = new TextFieldWidget(this.client.textRenderer, width / 2 - BG_WIDTH / 2 + 5, height / 2 + 30 - 1, BG_WIDTH - 10 - 55, 20, Text.empty());
 		this.urlEntryWidget.setMaxLength(ScreenBlockEntity.URL_MAX_LENGTH);
 		this.urlEntryWidget.setPlaceholder(Text.translatable("gui.glowcase.url"));
 		this.urlEntryWidget.setChangedListener((value) -> slide_dirty = true);
 
-		this.altEntryWidget = new TextFieldWidget(this.client.textRenderer, width/2 - BG_WIDTH/2 + 5, height/2 + 55 - 1, BG_WIDTH - 10, 20, Text.empty());
+		this.altEntryWidget = new TextFieldWidget(this.client.textRenderer, width / 2 - BG_WIDTH / 2 + 5, height / 2 + 55 - 1, BG_WIDTH - 10, 20, Text.empty());
 		this.altEntryWidget.setMaxLength(ScreenBlockEntity.ALT_MAX_LENGTH);
 		this.altEntryWidget.setPlaceholder(Text.translatable("gui.glowcase.alt"));
 		this.altEntryWidget.setChangedListener((value) -> slide_dirty = true);
 
 		ButtonWidget updateButton = ButtonWidget.builder(
 			Text.translatable("gui.glowcase.refresh"),
-			action -> { syncSlide(); getSlides(); }
-		).dimensions(width/2 + BG_WIDTH/2 - 55, height/2 + 30 - 1, 50, 20).build();
+			action -> {
+				syncSlide();
+				getSlides();
+			}
+		).dimensions(width / 2 + BG_WIDTH / 2 - 55, height / 2 + 30 - 1, 50, 20).build();
 
 		previousButton = ButtonWidget.builder(
 			Text.translatable("gui.glowcase.previous"),
@@ -108,7 +115,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 				current--;
 				getSlides();
 			}
-		).dimensions(width/2 - BG_WIDTH/2 - 25 + SCREEN_X1, height/2 - 25, 50, 20).build();
+		).dimensions(width / 2 - BG_WIDTH / 2 - 25 + SCREEN_X1, height / 2 - 25, 50, 20).build();
 
 		nextButton = ButtonWidget.builder(
 			Text.translatable("gui.glowcase.next"),
@@ -117,7 +124,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 				current++;
 				getSlides();
 			}
-		).dimensions(width/2 + BG_WIDTH/2 - 35 + SCREEN_X1, height/2 - 25, 50, 20).build();
+		).dimensions(width / 2 + BG_WIDTH / 2 - 35 + SCREEN_X1, height / 2 - 25, 50, 20).build();
 
 		getSlides();
 
@@ -133,44 +140,50 @@ public class TabletEditScreen extends GlowcaseScreen {
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.renderBackground(context, mouseX, mouseY, delta);
-		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2, 0, 0, BG_WIDTH, BG_HEIGHT, BG_WIDTH, BG_HEIGHT);
+		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,
+			width / 2 - BG_WIDTH / 2, height / 2 - BG_HEIGHT / 2,
+			0, 0, BG_WIDTH, BG_HEIGHT, BG_WIDTH, BG_HEIGHT);
 
 		// Render Slideshow
 
 		context.enableScissor(
-			width/2 - BG_WIDTH/2 + SCREEN_X1,
-			height/2 - BG_HEIGHT/2 + SCREEN_Y1,
-			width/2 - BG_WIDTH/2 + SCREEN_X2,
-			height/2 - BG_HEIGHT/2 + SCREEN_Y2
+			width / 2 - BG_WIDTH / 2 + SCREEN_X1,
+			height / 2 - BG_HEIGHT / 2 + SCREEN_Y1,
+			width / 2 - BG_WIDTH / 2 + SCREEN_X2,
+			height / 2 - BG_HEIGHT / 2 + SCREEN_Y2
 		);
 //		RenderSystem.enableBlend();
 
 		// Previous and Next Slide
-		renderPicture(context, previous_slide, width/2 - BG_WIDTH/2, height/2 - 20, .8f);
-		renderPicture(context, next_slide, width/2 + BG_WIDTH/2, height/2 - 20, .8f);
+		renderPicture(context, previous_slide, width / 2 - BG_WIDTH / 2, height / 2 - 20, .8f);
+		renderPicture(context, next_slide, width / 2 + BG_WIDTH / 2, height / 2 - 20, .8f);
 
 		// Fade-out Gradient
 		// We can't really use the build-in gradient because it only goes vertical
 
 		// Left
 		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,
-			width/2 - BG_WIDTH/2 + SCREEN_X1,
-			height/2 - BG_HEIGHT/2 + SCREEN_Y1,
-			0,160, IMG_WIDTH-1, (SCREEN_Y2-SCREEN_Y1)+1,
+			width / 2 - BG_WIDTH / 2 + SCREEN_X1,
+			height / 2 - BG_HEIGHT / 2 + SCREEN_Y1,
+			0 , 160,
+			IMG_WIDTH - 1, (SCREEN_Y2-SCREEN_Y1) + 1,
 			BG_WIDTH, BG_HEIGHT
 		);
 
 		// Right
-		context.drawTexture(RenderLayer::getGuiTextured, TEXTURE,
-			width/2 - BG_WIDTH/2 + SCREEN_X2 - IMG_WIDTH + 1,
-			height/2 - BG_HEIGHT/2 + SCREEN_Y1,
-			BG_WIDTH - IMG_WIDTH + 1,160, IMG_WIDTH-1, (SCREEN_Y2-SCREEN_Y1)+1, BG_WIDTH, BG_HEIGHT
+		context.drawTexture(
+			RenderLayer::getGuiTextured, TEXTURE,
+			width / 2 - BG_WIDTH / 2 + SCREEN_X2 - IMG_WIDTH + 1,
+			height / 2 - BG_HEIGHT / 2 + SCREEN_Y1,
+			BG_WIDTH - IMG_WIDTH + 1, 160,
+			IMG_WIDTH - 1, (SCREEN_Y2 - SCREEN_Y1) + 1,
+			BG_WIDTH, BG_WIDTH
 		);
 
 		// Current slide
-		renderPicture(context, current_slide, width/2, height/2 - 20, 1f);
+		renderPicture(context, current_slide, width / 2, height / 2 - 20, 1f);
 
-//		RenderSystem.disableBlend();
+		//RenderSystem.disableBlend();
 		context.disableScissor();
 	}
 
@@ -194,8 +207,11 @@ public class TabletEditScreen extends GlowcaseScreen {
 		int scaled_width = (int) (cur_width * final_scale);
 		int scaled_height = (int) (cur_height * final_scale);
 
-		context.drawTexture(RenderLayer::getGuiTextured, slide.getTexture().getSecond(),
-			x - scaled_width/2, y - scaled_height/2 , 0, 0, scaled_width, scaled_height, scaled_width, scaled_height);
+		context.drawTexture(
+			RenderLayer::getGuiTextured, slide.getTexture().getSecond(),
+			x - scaled_width / 2, y - scaled_height / 2, 0, 0,
+			scaled_width, scaled_height, scaled_width, scaled_height
+		);
 	}
 
 	public void syncSlide() {
@@ -236,15 +252,15 @@ public class TabletEditScreen extends GlowcaseScreen {
 
 
 		// Previous slide
-		if (current-1 >= 0) {
-			Pair<String, String> slide1 = slides.get(current-1);
+		if (current - 1 >= 0) {
+			Pair<String, String> slide1 = slides.get(current - 1);
 			previous_slide = GlowcaseClient.screenImageCache.getImage(slide1.getFirst(), null);
 		} else
 			previous_slide = null;
 
 		// Next slide
-		if (current+1 < slides.size()) {
-			Pair<String, String> slide1 = slides.get(current+1);
+		if (current + 1 < slides.size()) {
+			Pair<String, String> slide1 = slides.get(current + 1);
 			next_slide = GlowcaseClient.screenImageCache.getImage(slide1.getFirst(), null);
 		} else
 			next_slide = null;
@@ -252,7 +268,7 @@ public class TabletEditScreen extends GlowcaseScreen {
 		// Update shown values
 		this.urlEntryWidget.setText(slide.getFirst());
 		this.altEntryWidget.setText(slide.getSecond());
-		this.progressText.setMessage(Text.translatable("gui.glowcase.progress", ""+(current+1), slides.size()));
+		this.progressText.setMessage(Text.translatable("gui.glowcase.progress", "" + (current + 1), slides.size()));
 		slide_dirty = false;
 	}
 

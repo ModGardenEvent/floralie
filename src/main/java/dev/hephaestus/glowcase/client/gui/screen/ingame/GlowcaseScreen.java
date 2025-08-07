@@ -10,9 +10,8 @@ public abstract class GlowcaseScreen extends Screen {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.fill(0, 0, this.width, this.height, 0x88000000);
-		super.render(context, mouseX, mouseY, delta);
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+		this.renderInGameBackground(context);
 	}
 
 	@Override

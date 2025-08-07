@@ -20,7 +20,7 @@ public class ItemProviderBlockEntity extends GlowcaseBlockEntity implements Infi
 	protected GivesItem givesItem = GivesItem.ALWAYS;
 	protected boolean invisible = false;
 	public long cooldown = 0;
-	protected final Map<UUID, Long> givenTimes = new HashMap<>();
+	protected Map<UUID, Long> givenTimes = new HashMap<>();
 
 	public ItemProviderBlockEntity(BlockPos pos, BlockState state) {
 		super(Glowcase.ITEM_PROVIDER_BLOCK_ENTITY.get(), pos, state);
@@ -118,7 +118,12 @@ public class ItemProviderBlockEntity extends GlowcaseBlockEntity implements Infi
 		boolean holdingSameAsDisplay = ItemStack.areItemsAndComponentsEqual(getStack(), itemStack);
 
 		if (itemStack.isEmpty()) {
-			player.setStackInHand(Hand.MAIN_HAND, getStack().copy());
+			ItemStack stackToGive = getStack().copy();
+			if (player.isSneaking()) {
+				stackToGive.setCount(stackToGive.getMaxCount());
+			}
+
+			player.setStackInHand(Hand.MAIN_HAND, stackToGive);
 		} else if (holdingSameAsDisplay) {
 			itemStack.increment(getStack().getCount());
 			itemStack.capCount(itemStack.getMaxCount());
@@ -133,7 +138,14 @@ public class ItemProviderBlockEntity extends GlowcaseBlockEntity implements Infi
 		}
 	}
 
-	public enum GivesItem {
-		ALWAYS, TIMED, ONE
+	public enum GivesItem implements StringIdentifiable {
+		ALWAYS, TIMED, ONE;
+
+		public static final Codec<GivesItem> CODEC = StringIdentifiable.createCodec(GivesItem::values);
+
+		@Override
+		public String asString() {
+			return name().toLowerCase(Locale.ROOT);
+		}
 	}
 }

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "glowcase:block/text_block"
+    }
+  }
+}

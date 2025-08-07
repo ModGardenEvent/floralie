@@ -116,13 +116,13 @@ public record ItemProviderBlockEntityRenderer(BlockEntityRendererFactory.Context
 				if (entity.canGiveTo(MinecraftClient.getInstance().player)) {
 					Text countText = Text.literal("%dx".formatted(entity.getStack().getCount()));
 					matrices.translate(-context.getTextRenderer().getWidth(countText) + 16, 32, 0);
-					context.getTextRenderer().draw(countText, 0, 0, 0xFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+					context.getTextRenderer().draw(countText, 0, 0, 0xFFFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 				} else {
 					assert MinecraftClient.getInstance().player != null;
 					long cooldownMS = entity.getCooldownTicks(MinecraftClient.getInstance().player) * 50;
 					Text countText = Text.literal("[%s]".formatted(entity.getGivesItem() == ItemProviderBlockEntity.GivesItem.TIMED ? DurationFormatUtils.formatDuration(cooldownMS, cooldownMS > 3600000 ? "HH:mm:ss" : "mm:ss") : "MAX")).formatted(Formatting.YELLOW);
 					matrices.translate(-context.getTextRenderer().getWidth(countText) + 16, 24, 0);
-					context.getTextRenderer().draw(countText, 0, 0, 0xFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+					context.getTextRenderer().draw(countText, 0, 0, 0xFFFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 				}
 				matrices.pop();
 			}

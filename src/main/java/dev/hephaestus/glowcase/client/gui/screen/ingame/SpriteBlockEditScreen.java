@@ -17,11 +17,8 @@ import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 public class SpriteBlockEditScreen extends GlowcaseScreen {
 	private final SpriteBlockEntity spriteBlockEntity;
@@ -55,12 +52,12 @@ public class SpriteBlockEditScreen extends GlowcaseScreen {
 			this.spriteBlockEntity.setSprite(this.spriteWidget.getText());
 		});
 
-		this.spriteWidgetHelpButton = ButtonWidget.builder(Text.literal("?"), action -> {})
-			.dimensions(spriteWidget.getX() + spriteWidget.getWidth() + 4, spriteWidget.getY(),
-				spriteWidget.getHeight(), spriteWidget.getHeight())
-			.build();
+		Tooltip spriteHelpTooltip =  Tooltip.of(Text.translatable("gui.glowcase.screen.sprite_edit.sprite"));
 
-		this.spriteHelpTooltipText = Tooltip.wrapLines(this.client, Text.translatable("gui.glowcase.screen.sprite_edit.sprite"));
+		this.spriteWidgetHelpButton = ButtonWidget.builder(Text.literal("?"), action -> {})
+			.dimensions(spriteWidget.getX() + spriteWidget.getWidth() + 4, spriteWidget.getY(), spriteWidget.getHeight(), spriteWidget.getHeight())
+			.tooltip(spriteHelpTooltip)
+			.build();
 
 		this.rotationWidget = ButtonWidget.builder(Text.translatable("gui.glowcase.rotate"), (action) -> {
 			this.spriteBlockEntity.rotation = (this.spriteBlockEntity.rotation + 45) % 360;
@@ -102,12 +99,7 @@ public class SpriteBlockEditScreen extends GlowcaseScreen {
 		ResourceManager resourceManager = this.client.getResourceManager();
 		validSprites = allValidSprites(resourceManager);
 
-		suggestionWidget = new SuggestionListWidget<>(this.client.textRenderer, spriteWidget.getX(), spriteWidget.getY() + spriteWidget.getHeight() + 5, spriteWidget.getWidth(), 100, 10, 4, 5,
-			(suggestion) -> spriteWidget.setText(suggestion), s -> s);
-		
-		spriteWidget.setChangedListener((text) -> {
-			suggestionWidget.updateSuggestions(validSprites, text);
-		});
+		suggestionWidget = SuggestionListWidget.forTextFieldWithStaticSuggestions(spriteWidget, client.textRenderer, validSprites, Function.identity());
 	}
 
 	/**
@@ -147,9 +139,9 @@ public class SpriteBlockEditScreen extends GlowcaseScreen {
 		super.render(context, mouseX, mouseY, delta);
 		// Tooltip is handled this way, since setting the tooltip directly on the help button widget causes the tooltip
 		// to clip off-screen at higher GUI scales.
-		if (this.spriteWidgetHelpButton.isHovered() || (this.spriteWidgetHelpButton.isFocused() && this.client.getNavigationType().isKeyboard())) {
+		/*if (this.spriteWidgetHelpButton.isHovered() || (this.spriteWidgetHelpButton.isFocused() && this.client.getNavigationType().isKeyboard())) {
 			setTooltip(this.spriteHelpTooltipText);
-		}
+		}*/
 
 		// render the list over everything
 		suggestionWidget.renderWidget(context, mouseX, mouseY, delta);
@@ -172,10 +164,10 @@ public class SpriteBlockEditScreen extends GlowcaseScreen {
 			if (suggestionWidget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
 				return true;
 		}
-		
+
 		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 	}
-    
+
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (suggestionWidget.isMouseOver(mouseX, mouseY) && spriteWidget.isFocused()) {

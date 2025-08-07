@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "glowcase:block/config_link_block"
+    }
+  }
+}

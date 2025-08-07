@@ -1,0 +1,8 @@
+accessWidener v2 named
+
+accessible class net/minecraft/client/font/TextRenderer$Drawer
+accessible class net/minecraft/client/gui/render/GuiRenderer$Draw
+
+accessible method net/minecraft/client/gui/DrawContext drawTexturedQuad (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lcom/mojang/blaze3d/textures/GpuTextureView;IIIIFFFFI)V
+
+accessible field net/minecraft/client/data/BlockStateModelGenerator NORTH_DEFAULT_ROTATION_OPERATIONS Lnet/minecraft/client/data/BlockStateVariantMap;

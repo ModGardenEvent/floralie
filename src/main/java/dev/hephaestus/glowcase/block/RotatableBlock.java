@@ -9,12 +9,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class RotatableBlock extends WaterloggableGlowcaseBlock {
-	public RotatableBlock() {
-		this(Settings.create()
-			.nonOpaque()
-			.dropsNothing()
-			.strength(-1, Float.MAX_VALUE));
-	}
 
 	public RotatableBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -4,19 +4,22 @@
 	"package": "dev.hephaestus.glowcase.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ContainerLockMixin",
 		"LockableContainerBlockEntityAccessor",
 		"PlayerEntityMixin"
 	],
 	"client": [
 		"HandledScreenInvoker",
+		"client.GameRendererAccessor",
+		"client.GuiRendererMixin",
 		"client.KeyboardMixin",
 		"client.MixinHeldItemRenderer",
 		"client.MixinInGameHud",
-		"client.RenderSystemAccessor",
+		"client.MultiPhaseRenderLayerAccessor",
+		"client.RenderLayerMultiPhaseParametersAccessor",
 		"client.TextRendererAccessor",
 		"client.TextureManagerAccessor",
-		"client.compat.DynamicBufferShardCompatMixin"
+		"client.sound.SoundManagerMixin",
+		"client.sound.SoundSystemMixin"
 	],
 	"server": [],
 	"injectors": {

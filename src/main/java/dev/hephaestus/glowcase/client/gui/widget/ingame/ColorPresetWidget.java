@@ -46,7 +46,7 @@ public class ColorPresetWidget extends PressableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), this.z, this.color.getRGB());
+		context.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), this.color.getRGB());
 		if(isMouseOver(mouseX, mouseY)) {
 			drawOutline(context, this.getX() - 1, this.getY() - 1, this.getWidth() + 2, this.getHeight() + 2, this.z + 1);
 		}
@@ -54,10 +54,10 @@ public class ColorPresetWidget extends PressableWidget {
 
 	private void drawOutline(DrawContext context, int x, int y, int width, int height, int z) {
 		int color = Color.white.getRGB();
-		context.fill(x, y, x + width, y + 1, z, color);
-		context.fill(x, y, x + 1, y + height, z, color);
-		context.fill(x + width, y, x + width - 1, y + height, z, color);
-		context.fill(x, y + height, x + width, y + height - 1, z, color);
+		context.fill(x, y, x + width, y + 1, color);
+		context.fill(x, y, x + 1, y + height, color);
+		context.fill(x + width, y, x + width - 1, y + height, color);
+		context.fill(x, y + height, x + width, y + height - 1, color);
 	}
 
 	@Override

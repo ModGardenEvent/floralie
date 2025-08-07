@@ -29,10 +29,6 @@ import java.util.function.Consumer;
 public class PopupBlock extends WaterloggableGlowcaseBlock {
 	public static final MapCodec<PopupBlock> CODEC = createCodec(PopupBlock::new);
 
-	public PopupBlock() {
-		super();
-	}
-
 	public PopupBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

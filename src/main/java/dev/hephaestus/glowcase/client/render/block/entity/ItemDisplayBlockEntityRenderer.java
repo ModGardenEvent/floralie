@@ -9,7 +9,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
@@ -23,9 +22,6 @@ public record ItemDisplayBlockEntityRenderer(BlockEntityRendererFactory.Context 
 	@Override
 	public void render(ItemDisplayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
-		Entity camera = MinecraftClient.getInstance().getCameraEntity();
-
-		if (camera == null) return;
 
 		boolean renderAsBlock = entity.getRenderAsBlock();
 		matrices.push();

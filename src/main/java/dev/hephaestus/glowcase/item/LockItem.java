@@ -1,18 +1,14 @@
 package dev.hephaestus.glowcase.item;
 
-import dev.hephaestus.glowcase.Glowcase;
-import dev.hephaestus.glowcase.item.component.LockComponent;
 import dev.hephaestus.glowcase.mixin.LockableContainerBlockEntityAccessor;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.predicate.component.ComponentMapPredicate;
-import net.minecraft.predicate.component.ComponentsPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -26,16 +22,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class LockItem extends Item {
-	public static final ContainerLock CONTAINER_LOCK = new ContainerLock(
-		ItemPredicate.Builder.create().components(
-			ComponentsPredicate.Builder.create().exact(
-				ComponentMapPredicate.of(
-					Glowcase.LOCK_COMPONENT.get(),
-					LockComponent.of()
-				)
-			).build()
-		).build()
-	);
+	/**
+	 * Use an impossible condition for the lock
+	 */
+	public static final ContainerLock CONTAINER_LOCK = new ContainerLock(ItemPredicate.Builder.create().count(NumberRange.IntRange.exactly(Integer.MIN_VALUE)).build());
 
 	public LockItem(Settings settings) {
 		super(settings);

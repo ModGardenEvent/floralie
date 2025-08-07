@@ -22,7 +22,7 @@ public class PopupBlockEntity extends GlowcaseBlockEntity {
 	public String title = "";
 	public List<Text> lines = new ArrayList<>();
 	public TextBlockEntity.TextAlignment textAlignment = TextBlockEntity.TextAlignment.CENTER;
-	public int color = 0xFFFFFF;
+	public int color = 0xFFFFFFFF;
 	public boolean renderDirty = true;
 
 	public PopupBlockEntity(BlockPos pos, BlockState state) {
@@ -51,12 +51,12 @@ public class PopupBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		tag.getString("title").ifPresent(s -> this.title = s);
-		this.lines = new ArrayList<>();
-		tag.getInt("color").ifPresent(i -> this.color = i);
+		this.color = tag.getInt("title", "");
+		this.color = tag.getInt("color", 0xFFFFFFFF);
 
 		tag.getString("text_alignment").ifPresent(s -> this.textAlignment = TextBlockEntity.TextAlignment.valueOf(s));
 
+		this.lines = new ArrayList<>();
 		NbtList lines = tag.getListOrEmpty("lines");
 
 		for (NbtElement line : lines) {

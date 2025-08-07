@@ -37,8 +37,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.block.OrientationHelper;
-import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -49,13 +47,6 @@ public class ItemAcceptorBlock extends GlowcaseBlock {
 	private static final VoxelShape OUTLINE = VoxelShapes.fullCube();
 	public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
-
-	public ItemAcceptorBlock() {
-		this(Settings.create()
-			.nonOpaque()
-			.dropsNothing()
-			.strength(-1, Float.MAX_VALUE));
-	}
 
 	public ItemAcceptorBlock(AbstractBlock.Settings settings) {
 		super(settings);

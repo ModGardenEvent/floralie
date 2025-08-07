@@ -52,6 +52,21 @@ public class SuggestionListWidget<T> extends ClickableWidget {
 		setWidth(width);
     }
 
+	public static <T> SuggestionListWidget<T> forTextField(TextFieldWidget textField, TextRenderer textRenderer, Function<T, String> toStringFunction) {
+		return new SuggestionListWidget<>(textRenderer, textField.getX(), textField.getY() + textField.getHeight() + 5, textField.getWidth(), 100, 10, 4, 5,
+			a -> textField.setText(toStringFunction.apply(a)), toStringFunction);
+	}
+
+	public static <T> SuggestionListWidget<T> forTextFieldWithStaticSuggestions(TextFieldWidget textField, TextRenderer textRenderer, List<T> suggestions, Function<T, String> toStringFunction) {
+		var suggestionWidget = forTextField(textField, textRenderer, toStringFunction);
+
+		textField.setChangedListener((text) -> {
+			suggestionWidget.updateSuggestions(suggestions, text);
+		});
+
+		return suggestionWidget;
+	}
+
 	@Override
 	public void setWidth(int width) {
 		super.setWidth(width);
@@ -81,67 +96,70 @@ public class SuggestionListWidget<T> extends ClickableWidget {
         }
 
         // if there is only 1 suggestion & it's equal to input, hide the list
-        if (suggestions.size() == 1 && toStringFunction.apply(suggestions.get(0)).equals(filter)) {
+        if (suggestions.size() == 1 && toStringFunction.apply(suggestions.getFirst()).equals(filter)) {
             suggestions.clear();
         }
 
         scrollOffset = 0;
+
+		if (suggestions.isEmpty()) {
+			FRAMEBUFFER.resize(1, 1);
+		}
     }
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         if (suggestions.isEmpty()) return;
-        
+
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, 1);
-        
+
         int adjustedLineHeight = baseLineHeight + padding * 2;
         int rows = Math.min(suggestions.size(), maxRows);
         int dynamicHeight = rows * adjustedLineHeight;
 
         boolean scrollable = suggestions.size() > maxRows;
         int totalLines = suggestions.size();
-        int maxLines = rows;
 
-        int listWidth = scrollable ? this.getWidth() - 5 - 10 : this.getWidth();
+		int listWidth = scrollable ? this.getWidth() - 5 - 10 : this.getWidth();
 
-        context.enableScissor(this.getX(), this.getY(), this.getX() + listWidth, this.getY() + dynamicHeight);
-        
+		int x = SuggestionListWidget.this.getX();
+		int y = SuggestionListWidget.this.getY();
+		context.enableScissor(x, y, x + listWidth, y + dynamicHeight);
+
         float blurValue = (float) MinecraftClient.getInstance().options.getMenuBackgroundBlurrinessValue();
         if (blurValue >= 1.0F) {
             client.gameRenderer.renderBlur();
         }
+		context.fill(x, y, x + listWidth, y + dynamicHeight, bgColor);
 
-//        client.getFramebuffer().beginWrite(false);
-        context.fill(this.getX(), this.getY(), this.getX() + listWidth, this.getY() + dynamicHeight, 0x90000000);
+        drawOutline(context, x, y, listWidth, dynamicHeight, 0xFFFFFFFF);
 
-        drawOutline(context, this.getX(), this.getY(), listWidth, dynamicHeight, 0xFFFFFFFF);
-
-        if (scrollOffset > totalLines - maxLines) {
-            scrollOffset = Math.max(0, totalLines - maxLines);
+        if (scrollOffset > totalLines - rows) {
+            scrollOffset = Math.max(0, totalLines - rows);
         }
         
         // render each suggestion
-        for (int i = 0; i < maxLines; i++) {
+        for (int i = 0; i < rows; i++) {
             int suggestionIndex = i + scrollOffset;
             if (suggestionIndex >= totalLines) break;
             
             T suggestion = suggestions.get(suggestionIndex);
             String suggestionText = toStringFunction.apply(suggestion);
-            int suggestionY = getY() + i * adjustedLineHeight;
+            int suggestionY = y + i * adjustedLineHeight;
             
             // highlight hovered suggestion
-            if (mouseX >= this.getX() && mouseX <= this.getX() + listWidth && mouseY >= suggestionY && mouseY < suggestionY + adjustedLineHeight) {
-                context.fill(this.getX(), suggestionY, this.getX() + listWidth, suggestionY + adjustedLineHeight, 0xFF217C08);
-                drawOutline(context, this.getX(), suggestionY, listWidth, adjustedLineHeight, 0xFFFFFFFF);
+			boolean hover = mouseX >= x && mouseX <= x + listWidth && mouseY >= suggestionY && mouseY < suggestionY + adjustedLineHeight;
+			if (hover) {
+                context.fill(x, suggestionY, x + listWidth, suggestionY + adjustedLineHeight, 0xFF217C08);
+                drawOutline(context, x, suggestionY, listWidth, adjustedLineHeight, 0xFFFFFFFF);
             }
 
             // detect if the text is too long AND if the item is hovered, then scroll, otherwise don't
-            boolean suggestionHovered = (mouseX >= this.getX() && mouseX <= this.getX() + listWidth && mouseY >= suggestionY && mouseY < suggestionY + adjustedLineHeight);
             if (textRenderer.getWidth(suggestionText) > (this.getWidth() - padding - 20)) {
-                drawOverflowText(context, textRenderer, Text.literal(suggestionText), this.getX() + padding, suggestionY + padding - 2, this.getX() + listWidth - padding, suggestionY + adjustedLineHeight, 0xFFFFFF, suggestionHovered);
+                drawOverflowText(context, textRenderer, Text.literal(suggestionText), x + padding, suggestionY + padding - 2, x + listWidth - padding, suggestionY + adjustedLineHeight, 0xFFFFFFFF, hover);
             } else {
-                context.drawTextWithShadow(textRenderer, Text.literal(suggestionText), this.getX() + padding, suggestionY + padding + 1, 0xFFFFFF);
+                context.drawTextWithShadow(textRenderer, Text.literal(suggestionText), x + padding, suggestionY + padding + 1, 0xFFFFFFFF);
             }
         }
 
@@ -151,24 +169,19 @@ public class SuggestionListWidget<T> extends ClickableWidget {
         if (scrollable) {
             int scrollbarWidth = 10;
 
-            int sbX = getX() + listWidth + 5;
-            int sbY = getY();
+            int sbX = x + listWidth + 5;
 
-            int scrollbarHeight = dynamicHeight;
-            int scrollBarBgColor = 0x90000000;
-
-            context.enableScissor(sbX, sbY, sbX + scrollbarWidth, sbY + scrollbarHeight);
+			context.enableScissor(sbX, y, sbX + scrollbarWidth, y + dynamicHeight);
 
             float blurScrollbar = (float) client.options.getMenuBackgroundBlurrinessValue();
             if (blurScrollbar >= 1.0F) {
                 client.gameRenderer.renderBlur();
             }
-//            client.getFramebuffer().beginWrite(false);
 
             context.fill(sbX, sbY, sbX + scrollbarWidth, sbY + scrollbarHeight, scrollBarBgColor);
             context.disableScissor();
 
-            drawOutline(context, sbX, sbY, scrollbarWidth, scrollbarHeight, 0xFFFFFFFF);
+            drawOutline(context, sbX, y, scrollbarWidth, dynamicHeight, 0xFFFFFFFF);
 
             float visibleRatio = (float) rows / totalLines;
             int handleHeight = Math.max((int)(visibleRatio * (dynamicHeight - 2 * 2)), 4);
@@ -176,7 +189,7 @@ public class SuggestionListWidget<T> extends ClickableWidget {
             int availableScroll = totalLines - rows;
             int handleYOffset = availableScroll > 0 ? (int)(((float)scrollOffset / availableScroll) * ((dynamicHeight - 2 * 2) - handleHeight)) : 0;
             int handleX = sbX + 2;
-            int handleY = sbY + 2 + handleYOffset;
+            int handleY = y + 2 + handleYOffset;
             int handleWidth = scrollbarWidth - 2 * 2;
             
             context.fill(handleX, handleY, handleX + handleWidth, handleY + handleHeight, 0xFFFFFFFF);

@@ -16,16 +16,7 @@ import net.minecraft.util.math.Vec3d;
 public record RecipeBlockEntityRenderer(BlockEntityRendererFactory.Context context) implements BlockEntityRenderer<RecipeBlockEntity> {
 	private static final Identifier ITEM_TEXTURE = Glowcase.id("textures/item/recipe_block.png");
 
-	@Override
-	public void render(
-		RecipeBlockEntity entity,
-		float tickProgress,
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		int overlay,
-		Vec3d cameraPos
-	) {
+	public void render(RecipeBlockEntity entity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 //		if (GlowcaseClient.EMI_LOADED) {
 //			matrices.push();
 //			matrices.translate(0.5D, 0.5D, 0.5D);
@@ -46,10 +37,8 @@ public record RecipeBlockEntityRenderer(BlockEntityRendererFactory.Context conte
 //			boolean rendered = EmiWorldRenderUtils.renderRecipe(matrices, entity.recipe, entity.getPos());
 //			matrices.pop();
 //			if (rendered) return;
-//		}
+		}
 
-		boolean shouldRenderPlaceholder = BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos());
-		if (!GlowcaseClient.EMI_LOADED) shouldRenderPlaceholder = true;
-		if (shouldRenderPlaceholder) BlockEntityRenderUtil.renderPlaceholderWithBlockRotation(entity, ITEM_TEXTURE, 1F, matrices, vertexConsumers, entity.zOffset == TextBlockEntity.ZOffset.CENTER ? 0.01F : entity.zOffset == TextBlockEntity.ZOffset.FRONT ? 0.4F : -0.4F);
+		if (BlockEntityRenderUtil.shouldRenderPlaceholder(entity.getPos())) BlockEntityRenderUtil.renderPlaceholderWithBlockRotation(entity, ITEM_TEXTURE, 1F, matrices, vertexConsumers, entity.zOffset == TextBlockEntity.ZOffset.CENTER ? 0.01F : entity.zOffset == TextBlockEntity.ZOffset.FRONT ? 0.4F : -0.4F);
 	}
 }

@@ -25,10 +25,6 @@ import java.util.function.Consumer;
 public class ItemDisplayBlock extends StackInteractableBlock {
 	public static final MapCodec<ItemDisplayBlock> CODEC = createCodec(ItemDisplayBlock::new);
 
-	public ItemDisplayBlock() {
-		super();
-	}
-
 	public ItemDisplayBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

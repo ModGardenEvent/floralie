@@ -102,7 +102,7 @@ public class ParticleDisplayBlockEntity extends GlowcaseBlockEntity {
 		for (int i = 0; i < entity.count.get(world.random::nextDouble); i++) {
 			Vec3d particlePos = entity.position.get(world.random::nextGaussian).add(pos.toCenterPos());
 			Vec3d particleVelocity = entity.velocity.get(world.random::nextGaussian);
-			
+
 			if (world instanceof ClientWorld clientWorld) {
 				clientWorld.addParticleClient(
 					entity.particle,

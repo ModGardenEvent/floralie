@@ -86,10 +86,10 @@ public class ColorPickerWidget extends PressableWidget {
 	}
 
 	public void setPresets(boolean includeDefaultPresets, List<Color> addedPresets) {
-		if(includeDefaultPresets) {
+		if (includeDefaultPresets) {
 			addDefaultPresets();
 		}
-		if(!addedPresets.isEmpty()) {
+		if (!addedPresets.isEmpty()) {
 			for (Color preset : addedPresets) {
 				this.presetWidgets.add(ColorPresetWidget.fromColor(this, preset));
 			}
@@ -97,7 +97,7 @@ public class ColorPickerWidget extends PressableWidget {
 	}
 
 	public void confirmColor() {
-		if(this.onAccept != null) {
+		if (this.onAccept != null) {
 			this.onAccept.accept(this);
 		} else {
 			this.toggle(false);
@@ -105,7 +105,7 @@ public class ColorPickerWidget extends PressableWidget {
 	}
 
 	public void cancel() {
-		if(this.onCancel != null) {
+		if (this.onCancel != null) {
 			this.onCancel.accept(this);
 		} else {
 			this.toggle(false);
@@ -115,7 +115,7 @@ public class ColorPickerWidget extends PressableWidget {
 	public void toggle(boolean active) {
 		this.active = active;
 		this.visible = active;
-		if(this.active) {
+		if (this.active) {
 			this.updatePositions();
 			this.updateHSL();
 			this.updateThumbPositions();
@@ -139,7 +139,7 @@ public class ColorPickerWidget extends PressableWidget {
 
 	@Override
 	protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-		if(!visible) return;
+		if (!visible) return;
 		updateHSL();
 
 //		context.setShaderColor(1f, 1f, 1f, this.alpha);
@@ -150,7 +150,7 @@ public class ColorPickerWidget extends PressableWidget {
 
 		int x = this.getX();
 		int y = this.getY();
-		int z = 1; //prevent z-fighting with other widgets
+		int z = 1;
 		int width = this.getWidth();
 		int height = this.getHeight();
 
@@ -169,7 +169,7 @@ public class ColorPickerWidget extends PressableWidget {
 		drawColorPreview(context, previewX, previewY, previewWidth, previewHeight, z + 1);
 		drawSatLight(context, satLightX, satLightY, satLightWidth, satLightHeight, z + 3);
 		drawHueBar(context, hueX, hueY, hueWidth, hueHeight, z + 1);
-		if(this.includePresets) {
+		if (this.includePresets) {
 			//sorta dynamic but also really specific to keep it all aligned
 			//I'm not going to worry about it a lot though because I do not see the custom preset thing being used a lot if at all
 			drawPresets(context, mouseX, mouseY, delta, previewX, presetY, y + height - presetY, z + 1, presetSize, width / (presetSize + presetPadding), presetPadding);
@@ -202,7 +202,7 @@ public class ColorPickerWidget extends PressableWidget {
 		satLightWidth = width - previewWidth - 6;
 		satLightHeight = previewHeight;
 		hueX = x + 2;
-		hueY = previewY	+ previewHeight + 2;
+		hueY = previewY + previewHeight + 2;
 		hueWidth = width - 4;
 		hueHeight = height - previewHeight - 6 - (includePresets ? presetHeight : 0);
 		presetY = hueY + hueHeight + presetPadding;
@@ -214,8 +214,11 @@ public class ColorPickerWidget extends PressableWidget {
 
 	private void drawHueBar(DrawContext context, int x, int y, int width, int height, int z) {
 		//rainbow gradient
-		int[] colors = new int[] {Color.red.getRGB(), Color.yellow.getRGB(), Color.green.getRGB(),
-			Color.cyan.getRGB(), Color.blue.getRGB(), Color.magenta.getRGB(), Color.red.getRGB()};
+		int[] colors = new int[]{
+			Color.red.getRGB(), Color.yellow.getRGB(), Color.green.getRGB(),
+			Color.cyan.getRGB(), Color.blue.getRGB(), Color.magenta.getRGB(),
+			Color.red.getRGB()
+		};
 
 		int maxColors = colors.length - 1;
 		for (int color = 0; color < maxColors; color++) {
@@ -242,12 +245,12 @@ public class ColorPickerWidget extends PressableWidget {
 		drawOutline(context, satLightThumbX - 4, satLightThumbY - 4, 8, 8, z + 2, Color.white);
 	}
 
-	private void drawOutline(DrawContext context, int x, int y, int width, int height, int z, Color outlineColor) {
+	private void drawOutline(DrawContext context, int x, int y, int width, int height, Color outlineColor) {
 		int color = outlineColor.getRGB();
-		context.fill(x, y, x + width, y + 1, z, color);
-		context.fill(x, y, x + 1, y + height, z, color);
-		context.fill(x + width, y, x + width - 1, y + height, z, color);
-		context.fill(x, y + height, x + width, y + height - 1, z, color);
+		context.fill(x, y, x + width, y + 1, color);
+		context.fill(x, y, x + 1, y + height, color);
+		context.fill(x + width, y, x + width - 1, y + height, color);
+		context.fill(x, y + height, x + width, y + height - 1, color);
 	}
 
 	private void sidewaysGradient(DrawContext context, float x, float y, float width, float height, float z, int startColor, int endColor) {
@@ -271,9 +274,9 @@ public class ColorPickerWidget extends PressableWidget {
 			preset.renderWidget(context, mouseX, mouseY, delta);
 			presetX += presetSize + presetPadding;
 			renderedPresets++;
-			if(renderedPresets % presetsPerLine == 0) {
+			if (renderedPresets % presetsPerLine == 0) {
 				presetY += presetSize + presetPadding;
-				if(presetY > y + height) { //prevent overflow
+				if (presetY > y + height) { //prevent overflow
 					return;
 				}
 				presetX = x;
@@ -314,16 +317,18 @@ public class ColorPickerWidget extends PressableWidget {
 	}
 
 	public void setColorFromMouse(double mouseX, double mouseY) {
-		if(clickedSatLight(mouseX, mouseY)) {
+		int colorAlpha = color.getAlpha();
+
+		if (clickedSatLight(mouseX, mouseY)) {
 			setSatLightFromMouse(mouseX, mouseY);
-		} else if(clickedHue(mouseX, mouseY)) {
+		} else if (clickedHue(mouseX, mouseY)) {
 			setHueFromMouse(mouseX);
-		} else if(this.confirmButton.isMouseOver(mouseX, mouseY)) {
-			if(satLightDown || hueDown || presetDown || confirmOrCancelButtonDown) return;
+		} else if (this.confirmButton.isMouseOver(mouseX, mouseY)) {
+			if (satLightDown || hueDown || presetDown || confirmOrCancelButtonDown) return;
 			this.confirmButton.onClick(mouseX, mouseY);
 			confirmOrCancelButtonDown = true;
-		} else if(this.cancelButton.isMouseOver(mouseX, mouseY)) {
-			if(satLightDown || hueDown || presetDown || confirmOrCancelButtonDown) return;
+		} else if (this.cancelButton.isMouseOver(mouseX, mouseY)) {
+			if (satLightDown || hueDown || presetDown || confirmOrCancelButtonDown) return;
 			this.cancelButton.onClick(mouseX, mouseY);
 			confirmOrCancelButtonDown = true;
 		} else {
@@ -331,22 +336,22 @@ public class ColorPickerWidget extends PressableWidget {
 			checkAndSetPreset(mouseX, mouseY);
 		}
 
-		if(this.changeListener != null) {
+		if (this.changeListener != null) {
 			this.changeListener.accept(this.color);
 		}
 	}
 
 	public boolean clickedSatLight(double mouseX, double mouseY) {
-		if(hueDown || presetDown || confirmOrCancelButtonDown) return false;
+		if (hueDown || presetDown || confirmOrCancelButtonDown) return false;
 
-		if(mouseX >= satLightX
-		&& mouseX <= satLightX + satLightWidth
-		&& mouseY >= satLightY
-		&& mouseY <= satLightY + satLightHeight) {
+		if (mouseX >= satLightX
+			&& mouseX <= satLightX + satLightWidth
+			&& mouseY >= satLightY
+			&& mouseY <= satLightY + satLightHeight) {
 			satLightDown = true;
 		}
 
-		if(satLightDown) {
+		if (satLightDown) {
 			satLightThumbX = (int) Math.clamp(mouseX, satLightX, satLightX + satLightWidth);
 			satLightThumbY = (int) Math.clamp(mouseY, satLightY, satLightY + satLightHeight);
 		}
@@ -354,25 +359,25 @@ public class ColorPickerWidget extends PressableWidget {
 	}
 
 	public boolean clickedHue(double mouseX, double mouseY) {
-		if(satLightDown || presetDown || confirmOrCancelButtonDown) return false;
+		if (satLightDown || presetDown || confirmOrCancelButtonDown) return false;
 
-		if(mouseY >= hueY && mouseY <= hueY + hueHeight
-		&& mouseX >= hueX && mouseX <= hueX + hueWidth) {
+		if (mouseY >= hueY && mouseY <= hueY + hueHeight
+			&& mouseX >= hueX && mouseX <= hueX + hueWidth) {
 			hueDown = true;
 		}
 
-		if(hueDown) {
+		if (hueDown) {
 			hueThumbX = (int) Math.clamp(mouseX, hueX, hueX + hueWidth);
 		}
 		return hueDown;
 	}
 
 	public boolean checkAndSetPreset(double mouseX, double mouseY) {
-		if(satLightDown || hueDown || presetDown || confirmOrCancelButtonDown) return false;
+		if (satLightDown || hueDown || presetDown || confirmOrCancelButtonDown) return false;
 
 		//just checks for each preset here, and also sets here so it doesn't have to check again
 		for (ColorPresetWidget preset : this.presetWidgets) {
-			if(preset.isMouseOver(mouseX, mouseY)) {
+			if (preset.isMouseOver(mouseX, mouseY)) {
 				preset.onClick(mouseX, mouseY);
 				//even though the preset closes the color picker,
 				//this is added to prevent spamming tags when holding down the mouse button
@@ -384,7 +389,7 @@ public class ColorPickerWidget extends PressableWidget {
 
 	@Override
 	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
-		if(mouseDown || isMouseOver(mouseX, mouseY)) {
+		if (mouseDown || isMouseOver(mouseX, mouseY)) {
 			setColorFromMouse(mouseX, mouseY);
 		}
 	}
@@ -403,16 +408,16 @@ public class ColorPickerWidget extends PressableWidget {
 	public void onPress() {}
 
 	public void setSatLightFromMouse(double mouseX, double mouseY) {
-		if(mouseX < satLightX) {
+		if (mouseX < satLightX) {
 			this.saturation = 0f;
-		} else if(mouseX > satLightX + satLightWidth) {
+		} else if (mouseX > satLightX + satLightWidth) {
 			this.saturation = 1f;
 		} else {
 			float newSat = (float) (mouseX - satLightX) / satLightWidth;
 			this.saturation = Math.clamp(newSat, 0f, 1f);
 		}
 
-		if(mouseY < satLightY) {
+		if (mouseY < satLightY) {
 			this.light = 1f;
 		} else if (mouseY > satLightY + satLightHeight) {
 			this.light = 0f;
@@ -420,18 +425,20 @@ public class ColorPickerWidget extends PressableWidget {
 			float newLight = (float) (mouseY - satLightY) / satLightHeight;
 			this.light = Math.clamp(1f - newLight, 0f, 1f);
 		}
+
 		setColorFromHSL();
 	}
 
 	public void setHueFromMouse(double mouseX) {
-		if(mouseX < hueX) {
+		if (mouseX < hueX) {
 			this.hue = 0f;
-		} else if(mouseX > hueX + hueWidth) {
+		} else if (mouseX > hueX + hueWidth) {
 			this.hue = 1f;
 		} else {
 			float newHue = (float) (mouseX - hueX) / hueWidth;
 			this.hue = Math.clamp(newHue, 0f, 1f);
 		}
+
 		setColorFromHSL();
 	}
 
@@ -553,7 +560,7 @@ public class ColorPickerWidget extends PressableWidget {
 		public ColorPickerWidget build() {
 			ColorPickerWidget colorPickerWidget = new ColorPickerWidget(this.screen, this.x, this.y, this.width, this.height, Text.of(""));
 			colorPickerWidget.setIncludePresets(this.includePresets);
-			if(this.includePresets) {
+			if (this.includePresets) {
 				colorPickerWidget.setPresets(this.includeDefaultPresets, this.presets);
 			}
 			return colorPickerWidget;

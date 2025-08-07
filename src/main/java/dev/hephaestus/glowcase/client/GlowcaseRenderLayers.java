@@ -8,6 +8,7 @@ import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static net.minecraft.client.render.RenderPhase.ENABLE_LIGHTMAP;
 import static net.minecraft.client.render.RenderPhase.NO_TEXTURE;
@@ -48,6 +49,10 @@ public abstract class GlowcaseRenderLayers {
 			.layering(GLOWCASE_POLYGON_OFFSET_LAYERING)
 			.build(false)
 	));
+
+	public GlowcaseRenderLayers(String name, int size, boolean hasCrumbling, boolean translucent, Runnable begin, Runnable end) {
+		super(name, size, hasCrumbling, translucent, begin, end);
+	}
 
 	public static RenderLayer getScreen(Identifier texture, boolean culling) {
 		return SCREEN.apply(texture, culling);

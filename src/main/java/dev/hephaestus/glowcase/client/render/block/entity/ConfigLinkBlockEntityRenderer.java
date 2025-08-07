@@ -21,7 +21,6 @@ public record ConfigLinkBlockEntityRenderer(
 	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/config_link_block.png");
 
 	public void render(ConfigLinkBlockEntity entity, float f, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
-		// this is literally HyperlinkBlockEntityRenderer with extra steps
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
 		Camera camera = context.getRenderDispatcher().camera;
 		BlockEntityRenderUtil.renderBillboardPlaceholder(entity, ITEM_TEXTURE, 0.5F, matrices, vertexConsumers, camera);

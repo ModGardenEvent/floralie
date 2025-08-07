@@ -20,6 +20,7 @@
 	"mixins": [
 		"${modId}.mixins.json"
 	],
+	"accessWidener": "glowcase.accesswidener",
 	"depends": {
 		"minecraft": ">=${mc}",
 		"fabricloader": ">=${fl}",
@@ -30,6 +31,9 @@
 		"polydex": ">=${polydex}"
 	},
 	"entrypoints": {
+		"fabric-datagen": [
+			"dev.hephaestus.glowcase.datagen.GlowcaseDataGen"
+		],
 		"main": [
 			"dev.hephaestus.glowcase.Glowcase"
 		],

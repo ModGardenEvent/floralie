@@ -35,11 +35,6 @@ public class PopupBlockEditScreen extends GlowcaseScreen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		renderDarkening(context);
-	}
-
-	@Override
 	public void init() {
 		super.init();
 
@@ -139,10 +134,9 @@ public class PopupBlockEditScreen extends GlowcaseScreen {
 
 
 				int caretStartY = this.currentRow * 12;
-				int caretEndY = this.currentRow * 12 + 9;
 				if (this.ticksSinceOpened / 6 % 2 == 0 && !this.titleEntryWidget.isActive() && !this.colorEntryWidget.isActive()) {
 					if (selectionStart < line.length()) {
-						context.fill(startX, caretStartY, startX + 1, caretEndY, 0xCCFFFFFF);
+						context.fill(startX, caretStartY, startX + 1, caretStartY + 9, 0xCCFFFFFF);
 					} else {
 						context.drawText(client.textRenderer, "_", startX, this.currentRow * 12, 0xFFFFFFFF, false);
 					}

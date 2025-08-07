@@ -16,7 +16,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.state.StateManager;
-
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
@@ -40,11 +39,6 @@ public class ItemProviderBlock extends StackInteractableBlock {
 
 	public ItemProviderBlock() {
 		this(defaultSettings());
-	}
-
-	public ItemProviderBlock(AbstractBlock.Settings settings) {
-		super(settings);
-		this.setDefaultState(this.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override

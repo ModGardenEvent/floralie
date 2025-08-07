@@ -34,10 +34,6 @@ import java.util.function.Consumer;
 public class RecipeBlock extends RotatableBlock {
 	public static final MapCodec<RecipeBlock> CODEC = createCodec(RecipeBlock::new);
 
-	public RecipeBlock() {
-		super();
-	}
-
 	public RecipeBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

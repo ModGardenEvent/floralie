@@ -23,10 +23,6 @@ import java.util.function.Consumer;
 public class ScreenBlock extends RotatableBlock {
 	public static final MapCodec<ScreenBlock> CODEC = createCodec(ScreenBlock::new);
 
-	public ScreenBlock() {
-		super();
-	}
-
 	public ScreenBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

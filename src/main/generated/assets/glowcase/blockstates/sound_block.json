@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "glowcase:block/sound_block"
+    }
+  }
+}

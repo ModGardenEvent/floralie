@@ -41,7 +41,7 @@ public class NoteEditScreen extends TextEditorScreen {
 
 	private static final int BG_SIZE = 256;
 
-	private static final int BG_WIDTH = 244 ;
+	private static final int BG_WIDTH = 244;
 	private static final int BG_HEIGHT = 117;
 
 	private static final int TXT_OFF_Y = 12;
@@ -78,15 +78,15 @@ public class NoteEditScreen extends TextEditorScreen {
 
 			lines = new ArrayList<>();
 			lines.addAll(note.lines());
-			for (int i=0; i<(NoteComponent.LINES_LIMIT-note.lines().size()); i++)
+			for (int i = 0; i < (NoteComponent.LINES_LIMIT - note.lines().size()); i++)
 				lines.add(Text.literal(""));
 
-			textAlignment =  note.alignment();
+			textAlignment = note.alignment();
 		} else {
 			// Default data
 			lines = new ArrayList<>();
 
-			for (int i=0; i<NoteComponent.LINES_LIMIT; i++)
+			for (int i = 0; i < NoteComponent.LINES_LIMIT; i++)
 				lines.add(Text.literal(""));
 
 			textAlignment = NoteComponent.Alignment.LEFT;
@@ -130,8 +130,8 @@ public class NoteEditScreen extends TextEditorScreen {
 			int height = section.getFirst();
 			List<StringVisitable> texts = textRenderer.getTextHandler().wrapLines(section.getSecond(), BG_WIDTH - TXT_X_PADDING, Style.EMPTY);
 
-			for (int i=0; i<height; i++) {
-				if (i+1 <= texts.size()) {
+			for (int i = 0; i < height; i++) {
+				if (i + 1 <= texts.size()) {
 					StringVisitable text = texts.get(i);
 					if (i == (height - 1) && texts.size() > height)
 						text = ensureBounds(textRenderer, text);
@@ -154,7 +154,7 @@ public class NoteEditScreen extends TextEditorScreen {
 			}
 
 			this.changeAlignment.setMessage(Text.stringifiedTranslatable("gui.glowcase.alignment", textAlignment));
-		}).dimensions(width/2 - BG_WIDTH/2, height/2 - BG_HEIGHT/2 - offset - 20, BG_WIDTH/12 * 6 - 3 - 7, 20).build();
+		}).dimensions(width / 2 - BG_WIDTH / 2, height / 2 - BG_HEIGHT / 2 - offset - 20, BG_WIDTH / 12 * 6 - 3 - 7, 20).build();
 
 		signButton = ButtonWidget.builder(Text.translatable("book.signButton"), action -> {
 			if (!signing) {
@@ -172,7 +172,7 @@ public class NoteEditScreen extends TextEditorScreen {
 				finalizing = true;
 				close();
 			}
-		}).dimensions(width/2 - BG_WIDTH/2, height/2 + BG_HEIGHT/2 + offset, BG_WIDTH/2-3, 20).build();
+		}).dimensions(width / 2 - BG_WIDTH / 2, height / 2 + BG_HEIGHT / 2 + offset, BG_WIDTH / 2 - 3, 20).build();
 		doneButton = ButtonWidget.builder(Text.translatable("gui.done"), action -> {
 			if (signing) {
 				signing = false;
@@ -183,10 +183,10 @@ public class NoteEditScreen extends TextEditorScreen {
 				toggleWidgets(true);
 			} else
 				close();
-		}).dimensions(width/2 + BG_WIDTH/2 - (BG_WIDTH/2-3), height/2 + BG_HEIGHT/2 + offset, BG_WIDTH/2-3, 20).build();
+		}).dimensions(width / 2 + BG_WIDTH / 2 - (BG_WIDTH / 2 - 3), height / 2 + BG_HEIGHT / 2 + offset, BG_WIDTH / 2 - 3, 20).build();
 
 
-		this.colorPickerWidget = ColorPickerWidget.builder(this,216, 10).size(182, 104).build();
+		this.colorPickerWidget = ColorPickerWidget.builder(this, 216, 10).size(182, 104).build();
 		this.colorPickerWidget.toggle(false); //start deactivated
 
 		this.addDrawableChild(colorPickerWidget);
@@ -195,13 +195,12 @@ public class NoteEditScreen extends TextEditorScreen {
 		addDrawableChild(doneButton);
 		addDrawableChild(signButton);
 
-		addFormattingButtons(width/2 - BG_WIDTH/2 + BG_WIDTH/12 * 6 - 5 - 7, height/2 - BG_HEIGHT/2 - offset - 20 - 4, width / 100, 20, 2);
+		addFormattingButtons(width / 2 - BG_WIDTH / 2 + BG_WIDTH / 12 * 6 - 5 - 7, height / 2 - BG_HEIGHT / 2 - offset - 20 - 4, width / 100, 20, 2);
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (client == null)
-			return;
+		if (client == null) return;
 
 		super.render(context, mouseX, mouseY, delta);
 
@@ -210,15 +209,15 @@ public class NoteEditScreen extends TextEditorScreen {
 
 		// Ensure no overflow is happening
 		context.enableScissor(
-			width/2 - BG_WIDTH/2 + SCREEN_X1,
-			height/2 - BG_HEIGHT/2 + SCREEN_Y1,
-			width/2 + BG_WIDTH/2 + SCREEN_X2,
-			height/2 + BG_HEIGHT/2 + SCREEN_Y2
+			width / 2 - BG_WIDTH / 2 + SCREEN_X1,
+			height / 2 - BG_HEIGHT / 2 + SCREEN_Y1,
+			width / 2 + BG_WIDTH / 2 + SCREEN_X2,
+			height / 2 + BG_HEIGHT / 2 + SCREEN_Y2
 		);
 
 		// Text rendering
 		boolean overflow = false;
-		for (int i=0; i<screen.size(); i++) {
+		for (int i = 0; i < screen.size(); i++) {
 			StringVisitable text = screen.get(i);
 			if (signing && i >= 6 && i <= 7)
 				text = StringVisitable.concat(text, Text.of((i == 6) ? title : author));
@@ -233,7 +232,7 @@ public class NoteEditScreen extends TextEditorScreen {
 				text = Text.literal(getRawLine(currentRow));
 				line_width = textRenderer.getWidth(text);
 				if (outOfBounds(textRenderer, text)) {
-					x += width/2f + BG_WIDTH/2f - TXT_X_PADDING/2f - line_width + editing_line_offset;
+					x += width / 2f + BG_WIDTH / 2f - TXT_X_PADDING / 2f - line_width + editing_line_offset;
 					overflow = true;
 				}
 			}
@@ -246,7 +245,7 @@ public class NoteEditScreen extends TextEditorScreen {
 				};
 			}
 
-			context.drawText(textRenderer, Language.getInstance().reorder(text), (int) x, (height/2 - BG_HEIGHT/2 + TXT_OFF_Y) + (textRenderer.fontHeight * i), NoteTextColorResource.TXT_COLOR, false);
+			context.drawText(textRenderer, Language.getInstance().reorder(text), (int) x, (height / 2 - BG_HEIGHT / 2 + TXT_OFF_Y) + (textRenderer.fontHeight * i), NoteTextColorResource.TXT_COLOR, false);
 
 			if (overflow && i == currentRow) {
 //				RenderSystem.enableBlend();
@@ -271,10 +270,13 @@ public class NoteEditScreen extends TextEditorScreen {
 					);
 				}
 
-				if (x < (width/2f - BG_WIDTH/2f + SCREEN_X1))
-					context.drawText(textRenderer, ARROW_LEFT_SYMBOL, width/2 - BG_WIDTH/2 + SCREEN_X1 + 1, height / 2 - BG_HEIGHT / 2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow), NoteTextColorResource.TXT_COLOR, false);
-				if (editing_line_offset > 0)
-					context.drawText(textRenderer, ARROW_RIGHT_SYMBOL, width/2 + BG_WIDTH/2 + SCREEN_X2 - textRenderer.getWidth(ARROW_RIGHT_SYMBOL) - 1, height / 2 - BG_HEIGHT / 2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow), NoteTextColorResource.TXT_COLOR, false);
+				if (x < (width / 2f - BG_WIDTH / 2f + SCREEN_X1)) {
+					context.drawText(textRenderer, ARROW_LEFT_SYMBOL, width / 2 - BG_WIDTH / 2 + SCREEN_X1 + 1, height / 2 - BG_HEIGHT / 2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow), NoteTextColorResource.TXT_COLOR, false);
+				}
+
+				if (editing_line_offset > 0) {
+					context.drawText(textRenderer, ARROW_RIGHT_SYMBOL, width / 2 + BG_WIDTH / 2 + SCREEN_X2 - textRenderer.getWidth(ARROW_RIGHT_SYMBOL) - 1, height / 2 - BG_HEIGHT / 2 + TXT_OFF_Y + (textRenderer.fontHeight * currentRow), NoteTextColorResource.TXT_COLOR, false);
+				}
 
 //				RenderSystem.disableBlend();
 			}
@@ -295,12 +297,12 @@ public class NoteEditScreen extends TextEditorScreen {
 
 			String preSelection = line.substring(0, MathHelper.clamp(line.length(), 0, selectionStart));
 			int startX = client.textRenderer.getWidth(preSelection);
-			int startY = (height/2 - BG_HEIGHT/2 + TXT_OFF_Y) + (textRenderer.fontHeight * currentRow);
+			int caretStartY = (height / 2 - BG_HEIGHT / 2 + TXT_OFF_Y) + (textRenderer.fontHeight * currentRow);
 
 			float push = switch (overflow ? NoteComponent.Alignment.RIGHT : alignment) {
-				case LEFT -> width/2f - BG_WIDTH/2f + TXT_X_PADDING/2f;
-				case CENTER -> width/2f - textRenderer.getWidth(line)/2f;
-				case RIGHT ->  width/2f + BG_WIDTH/2f - TXT_X_PADDING/2f - textRenderer.getWidth(line);
+				case LEFT -> width / 2f - BG_WIDTH / 2f + TXT_X_PADDING / 2f;
+				case CENTER -> width / 2f - textRenderer.getWidth(line) / 2f;
+				case RIGHT -> width / 2f + BG_WIDTH / 2f - TXT_X_PADDING / 2f - textRenderer.getWidth(line);
 			};
 
 			startX += (int) push;
@@ -310,9 +312,9 @@ public class NoteEditScreen extends TextEditorScreen {
 			if (overflow) {
 				int apply = 0;
 
-				while ((startX + editing_line_offset + apply) < (width/2 - BG_WIDTH/2 + SCREEN_X1 + 32))
+				while ((startX + editing_line_offset + apply) < (width / 2 - BG_WIDTH / 2 + SCREEN_X1 + 32))
 					apply++;
-				while ((startX + editing_line_offset+ apply) > (width/2 + BG_WIDTH/2 + SCREEN_X2 - 32))
+				while ((startX + editing_line_offset + apply) > (width / 2 + BG_WIDTH / 2 + SCREEN_X2 - 32))
 					apply--;
 
 				editing_line_offset += apply;
@@ -322,9 +324,9 @@ public class NoteEditScreen extends TextEditorScreen {
 			int caretLength = 9;
 			if (this.ticksSinceOpened / 6 % 2 == 0) {
 				if (selectionStart < line.length()) {
-					context.fill(startX, startY, startX + 1, startY + caretLength, 0xCC000000);
+					context.fill(startX, caretStartY, startX + 1, caretStartY + caretLength, 0xCC000000);
 				} else {
-					context.drawText(textRenderer, "_", startX, startY, NoteTextColorResource.TXT_COLOR, false);
+					context.drawText(textRenderer, "_", startX, caretStartY, NoteTextColorResource.TXT_COLOR, false);
 				}
 			}
 
@@ -363,7 +365,7 @@ public class NoteEditScreen extends TextEditorScreen {
 		boolean result;
 
 		if (this.colorPickerWidget.active && (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)) {
-			if(keyCode == GLFW.GLFW_KEY_ENTER) {
+			if (keyCode == GLFW.GLFW_KEY_ENTER) {
 				this.colorPickerWidget.confirmColor();
 			} else {
 				this.colorPickerWidget.cancel();
@@ -377,7 +379,7 @@ public class NoteEditScreen extends TextEditorScreen {
 				currentRow = Math.max(currentRow - 1, signing ? 6 : 0);
 				editing_line_offset = 0;
 				selectionManager.putCursorAtEnd();
-			} else if (keyCode == GLFW.GLFW_KEY_DOWN || (keyCode == GLFW.GLFW_KEY_RIGHT && selectionManager.getSelectionStart() >= getRawLine(currentRow).length() && currentRow < NoteComponent.LINES_LIMIT-1)) {
+			} else if (keyCode == GLFW.GLFW_KEY_DOWN || (keyCode == GLFW.GLFW_KEY_RIGHT && selectionManager.getSelectionStart() >= getRawLine(currentRow).length() && currentRow < NoteComponent.LINES_LIMIT - 1)) {
 				// Move cursor down
 				currentRow = Math.min(currentRow + 1, signing ? 7 : NoteComponent.LINES_LIMIT - 1);
 				editing_line_offset = 0;
@@ -386,7 +388,7 @@ public class NoteEditScreen extends TextEditorScreen {
 					selectionManager.putCursorAtEnd();
 				else
 					selectionManager.moveCursorToStart();
-			} else if (!signing && (currentRow < NoteComponent.LINES_LIMIT-1) && (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER)) {
+			} else if (!signing && (currentRow < NoteComponent.LINES_LIMIT - 1) && (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER)) {
 				// Split lines (enter)
 				if (hasSpaceLeft()) {
 					int cursor = selectionManager.getSelectionStart();
@@ -395,7 +397,7 @@ public class NoteEditScreen extends TextEditorScreen {
 						currentRow++;
 						selectionManager.moveCursorToStart();
 					} else if (cursor >= getRawLine(currentRow).length()) {
-						lines.add(currentRow+1, Text.of(""));
+						lines.add(currentRow + 1, Text.of(""));
 						currentRow++;
 						selectionManager.moveCursorToStart();
 					} else {
@@ -423,13 +425,13 @@ public class NoteEditScreen extends TextEditorScreen {
 				currentRow--;
 				selectionManager.moveCursorToStart();
 				selectionManager.moveCursor(before.length());
-			} else if (!signing && (currentRow <  NoteComponent.LINES_LIMIT-1 && selectionManager.getSelectionStart() >= getRawLine(currentRow).length()) && (keyCode == GLFW.GLFW_KEY_DELETE)) {
+			} else if (!signing && (currentRow < NoteComponent.LINES_LIMIT - 1 && selectionManager.getSelectionStart() >= getRawLine(currentRow).length()) && (keyCode == GLFW.GLFW_KEY_DELETE)) {
 				// Delete after cursor (delete key)
 				String curLine = getRawLine(currentRow);
-				String after = getRawLine(currentRow+1);
+				String after = getRawLine(currentRow + 1);
 				setRawLine(currentRow, curLine + after);
 
-				lines.remove(currentRow+1);
+				lines.remove(currentRow + 1);
 				lines.add(Text.of(""));
 			} else if (signing && keyCode == GLFW.GLFW_KEY_TAB) {
 				// Tab
@@ -457,32 +459,32 @@ public class NoteEditScreen extends TextEditorScreen {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if(colorPickerWidget.active && colorPickerWidget.visible) {
-			if(colorPickerWidget.isMouseOver(mouseX, mouseY)) {
+		if (colorPickerWidget.active && colorPickerWidget.visible) {
+			if (colorPickerWidget.isMouseOver(mouseX, mouseY)) {
 				colorPickerWidget.mouseClicked(mouseX, mouseY, button);
 				this.setFocused(colorPickerWidget);
 				this.setDragging(true);
 				return true;
 			} else {
-				if(!this.colorPickerWidget.targetElement.isMouseOver(mouseX, mouseY)) {
+				if (!this.colorPickerWidget.targetElement.isMouseOver(mouseX, mouseY)) {
 					toggleColorPicker(false);
 				}
 			}
 		}
 
-		boolean withinX = (mouseX >= width/2f-BG_WIDTH/2f && mouseX <= width/2f+BG_WIDTH/2f);
-		boolean withinY = (mouseY >= height/2f-BG_HEIGHT/2f && mouseY <= height/2f+BG_HEIGHT/2f);
+		boolean withinX = (mouseX >= width / 2f - BG_WIDTH / 2f && mouseX <= width / 2f + BG_WIDTH / 2f);
+		boolean withinY = (mouseY >= height / 2f - BG_HEIGHT / 2f && mouseY <= height / 2f + BG_HEIGHT / 2f);
 
 		if (withinX && withinY) {
 			this.setFocused(null);
 
-			double linePos = mouseY - (height/2f - BG_HEIGHT/2f + TXT_OFF_Y);
+			double linePos = mouseY - (height / 2f - BG_HEIGHT / 2f + TXT_OFF_Y);
 			double totalHeight = NoteComponent.LINES_LIMIT * textRenderer.fontHeight;
 
 			int clickedLine = Math.clamp(
 				(int) (NoteComponent.LINES_LIMIT / totalHeight * linePos),
 				0,
-				NoteComponent.LINES_LIMIT-1
+				NoteComponent.LINES_LIMIT - 1
 			);
 			if (signing)
 				clickedLine = Math.clamp(clickedLine, 6, 7);
@@ -502,9 +504,9 @@ public class NoteEditScreen extends TextEditorScreen {
 				} else {
 					// Non-scrolling line
 					float offset = switch (textAlignment) {
-						case LEFT -> width/2f-BG_WIDTH/2f+TXT_X_PADDING/2f;
-						case CENTER -> width/2f - textRenderer.getWidth(line)/2f;
-						case RIGHT -> width/2f + BG_WIDTH/2f - TXT_X_PADDING/2f - textRenderer.getWidth(line);
+						case LEFT -> width / 2f - BG_WIDTH / 2f + TXT_X_PADDING / 2f;
+						case CENTER -> width / 2f - textRenderer.getWidth(line) / 2f;
+						case RIGHT -> width / 2f + BG_WIDTH / 2f - TXT_X_PADDING / 2f - textRenderer.getWidth(line);
 					};
 					charPos -= (int) offset;
 				}
@@ -517,7 +519,7 @@ public class NoteEditScreen extends TextEditorScreen {
 					selectionManager.moveCursorToStart();
 				} else {
 					// Clicking mid-text
-					for (int i=1; i<chars; i++) {
+					for (int i = 1; i < chars; i++) {
 						String testContents = line.substring(0, i);
 						int sub_width = textRenderer.getWidth(testContents);
 						if (charPos <= sub_width) {
@@ -596,7 +598,7 @@ public class NoteEditScreen extends TextEditorScreen {
 
 		if (finalizing) {
 			// Remove insertion for optimization as it is not needed anymore
-			for (int i=0; i<lines.size(); i++) {
+			for (int i = 0; i < lines.size(); i++) {
 				String rawLine = getRawLine(i);
 				Text text = PARSER.parseText(rawLine, ParserContext.of());
 				lines.set(i, text);

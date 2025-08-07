@@ -29,10 +29,6 @@ import java.util.function.Consumer;
 public class ConfigLinkBlock extends WaterloggableGlowcaseBlock {
 	public static final MapCodec<ConfigLinkBlock> CODEC = createCodec(ConfigLinkBlock::new);
 
-	public ConfigLinkBlock() {
-		super();
-	}
-
 	public ConfigLinkBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

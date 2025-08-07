@@ -1,14 +1,14 @@
 package dev.hephaestus.glowcase.client.util;
 
 import com.google.common.collect.Lists;
-import dev.emi.emi.api.widget.Widget;
-import dev.emi.emi.api.widget.WidgetHolder;
+//import dev.emi.emi.api.widget.Widget;
+//import dev.emi.emi.api.widget.WidgetHolder;
 import dev.hephaestus.glowcase.util.RequiresEmiLoaded;
 
 import java.util.List;
 
-public class GlowcaseWidgetHolder implements WidgetHolder, RequiresEmiLoaded {
-	private final int width, height;
+public class GlowcaseWidgetHolder implements /*WidgetHolder,*/ RequiresEmiLoaded {
+	/*private final int width, height;
 	private final List<Widget> widgets = Lists.newArrayList();
 
 	public GlowcaseWidgetHolder(int width, int height) {
@@ -38,5 +38,5 @@ public class GlowcaseWidgetHolder implements WidgetHolder, RequiresEmiLoaded {
 
 	public void clear() {
 		widgets.clear();
-	}
+	}*/
 }

@@ -112,12 +112,13 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 				matrices.multiply(new Quaternionf().rotateLocalY(MathHelper.PI));
 				matrices.translate(-width, 0, -0.025D);
 
-				drawFillRect(matrices, vertexConsumers, (int) width + 5, (i + 1) * 12 - 2, -5, i * 12 - 2, entity.backgroundColor);
+				//drawFillRect(matrices, vertexConsumers, (int) width + 5, (i + 1) * 12 - 2, -5, i * 12 - 2, entity.backgroundColor);
 				matrices.pop();
 			}
 
 
-			textRenderer.draw(entity.lines.get(i), 0, i * 12, entity.color, entity.shadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+			drawer.draw(TextRenderer.GlyphDrawer.drawing(vertexConsumers, matrices.peek().getPositionMatrix(), TextLayerType.NORMAL, LightmapTextureManager.MAX_LIGHT_COORDINATE));
+			//textRenderer.draw(entity.lines.get(i), 0, i * 12, entity.color, entity.shadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 
 			matrices.pop();
 		}
@@ -127,16 +128,21 @@ public class TextBlockEntityRenderer implements BlockEntityRenderer<TextBlockEnt
 
 	@SuppressWarnings("SameParameterValue")
 	private void drawFillRect(MatrixStack matrices, VertexConsumerProvider vcp, int x1, int y1, int x2, int y2, int color) {
+		float red = (float) (color >> 16 & 255) / 255.0F;
+		float green = (float) (color >> 8 & 255) / 255.0F;
+		float blue = (float) (color & 255) / 255.0F;
+		float alpha = (float) (color >> 24 & 255) / 255.0F;
+
 		// Horrible up to no good hack to get proper translucency sorting :3
-		final BakedGlyph renderer = ((TextRendererAccessor) MinecraftClient.getInstance().textRenderer)
-			.invokeGetFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
-
-		final RenderLayer renderLayer = renderer.getLayer(TextRenderer.TextLayerType.NORMAL);
-		final VertexConsumer consumer = vcp.getBuffer(renderLayer);
-		final Matrix4f matrix = matrices.peek().getPositionMatrix();
-
-		renderer.drawRectangle(new BakedGlyph.Rectangle(
-			x1, y1, x2, y2, 0.2f, color
-		), matrix, consumer, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+//		final BakedGlyph renderer = ((TextRendererAccessor) MinecraftClient.getInstance().textRenderer)
+//			.invokeGetFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
+//
+//		final RenderLayer renderLayer = renderer.getLayer(TextRenderer.TextLayerType.NORMAL);
+//		final VertexConsumer consumer = vcp.getBuffer(renderLayer);
+//		final Matrix4f matrix = matrices.peek().getPositionMatrix();
+//
+//		renderer.drawRectangle(new BakedGlyph.Rectangle(
+//			x1, y1, x2, y2, 0.2f, color
+//		), matrix, consumer, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 	}
 }

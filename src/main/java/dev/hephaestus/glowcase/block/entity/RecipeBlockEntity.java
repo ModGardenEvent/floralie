@@ -19,6 +19,7 @@ public class RecipeBlockEntity extends GlowcaseBlockEntity {
 	public String recipe = "diamond_sword";
 	public TextBlockEntity.ZOffset zOffset = TextBlockEntity.ZOffset.CENTER;
 
+	//TODO: maybe move XYZ rotation to nbt? or use vec2f
 	public float rotationX = 0f;
 	public float rotationY = 0f;
 
@@ -57,13 +58,9 @@ public class RecipeBlockEntity extends GlowcaseBlockEntity {
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		tag.getString("recipe")
-			.ifPresent(s -> this.recipe = s);
-		tag.getString("z_offset")
-			.ifPresent(s -> this.zOffset = TextBlockEntity.ZOffset.valueOf(s));
-		tag.getFloat("rotationX")
-			.ifPresent(f -> this.rotationX = f);
-		tag.getFloat("rotationY")
-			.ifPresent(f -> this.rotationY = f);
+		this.recipe = tag.getString("recipe", "diamond_sword");
+		this.zOffset = TextBlockEntity.ZOffset.valueOf(tag.getString("z_offset", "center");
+		this.rotationX = tag.getFloat("rotationX", 0);
+		this.rotationY = tag.getFloat("rotationY", 0);
 	}
 }

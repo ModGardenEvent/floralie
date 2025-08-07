@@ -1,12 +1,20 @@
 package dev.hephaestus.glowcase.client.gui.screen.ingame;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.ColorPickerWidget;
 import eu.pb4.placeholders.api.parsers.tag.TagRegistry;
 import eu.pb4.placeholders.api.parsers.tag.TextTag;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 
 import java.util.Arrays;
 import java.util.Comparator;

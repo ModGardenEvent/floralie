@@ -74,7 +74,7 @@ public class ParticleDisplayEditScreen extends GlowcaseScreen {
 		particleId.setMaxLength(9999);
 
 		String optionsString = effectToTag(blockEntity.particle, lookup.getOps(NbtOps.INSTANCE)).toString();
-		if (optionsString.startsWith("{}")) optionsString = "";
+		if (optionsString.equals("{}")) optionsString = "";
 
 		particleId.setText(Registries.PARTICLE_TYPE.getId(blockEntity.particle.getType()) + optionsString);
 
@@ -267,7 +267,7 @@ public class ParticleDisplayEditScreen extends GlowcaseScreen {
 			if (suggestionWidget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
 				return true;
 		}
-		
+
 		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 	}
 
@@ -276,8 +276,8 @@ public class ParticleDisplayEditScreen extends GlowcaseScreen {
 		if (suggestionWidget.isMouseOver(mouseX, mouseY) && particleId.isFocused()) {
 			return suggestionWidget.mouseClicked(mouseX, mouseY, button);
 		} else {
-            suggestionWidget.updateSuggestions(new ArrayList<>(), "");
-        }
+			suggestionWidget.updateSuggestions(new ArrayList<>(), "");
+		}
 
 		return super.mouseClicked(mouseX, mouseY, button);
 	}

@@ -30,11 +30,9 @@ public record ItemAcceptorBlockEntityRenderer(BlockEntityRendererFactory.Context
 	private static final Quaternionf ITEM_LIGHT_ROTATION_FLAT = RotationAxis.POSITIVE_X.rotationDegrees(-45);
 
 	@Override
-	public void render(ItemAcceptorBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+	public void render(ItemAcceptorBlockEntity entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
-		Entity camera = MinecraftClient.getInstance().getCameraEntity();
-
-		if (camera == null) return;
+		MinecraftClient client = MinecraftClient.getInstance();
 
 		ItemRenderer itemRenderer = context.getItemRenderer();
 

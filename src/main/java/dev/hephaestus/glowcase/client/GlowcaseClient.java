@@ -17,6 +17,7 @@ import dev.hephaestus.glowcase.client.render.block.entity.ScreenBlockEntityRende
 import dev.hephaestus.glowcase.client.render.block.entity.SoundPlayerBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.SpriteBlockEntityRenderer;
 import dev.hephaestus.glowcase.client.render.block.entity.TextBlockEntityRenderer;
+import dev.hephaestus.glowcase.client.render.block.entity.*;
 import dev.hephaestus.glowcase.client.render.item.ItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.NoteItemHandRenderer;
 import dev.hephaestus.glowcase.client.render.item.TabletItemHandRenderer;
@@ -26,7 +27,6 @@ import dev.hephaestus.glowcase.item.ScrollableItem;
 import dev.hephaestus.glowcase.mixin.HandledScreenInvoker;
 import dev.hephaestus.glowcase.packet.C2SSlotScrolled;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
@@ -46,8 +46,6 @@ public class GlowcaseClient implements ClientModInitializer {
 	public static final Boolean EIV_LOADED = FabricLoader.getInstance().isModLoaded("eiv");
 	public static final ScreenImageCache screenImageCache = new ScreenImageCache();
 	public static final Identifier PROVIDER_CROSSHAIR_TEXTURE = Glowcase.id("hud/provider_crosshair");
-	// Use a stack so it can be more freely used if needed in more places
-	public static final Stack<Void> PREVENT_VEIL_DYNAMIC_BUFFER = new Stack<>();
 
 	private double accScroll = 0;
 
@@ -74,6 +72,9 @@ public class GlowcaseClient implements ClientModInitializer {
 		ItemHandRenderer.register(Glowcase.NOTE_ITEM.get().asItem(), new NoteItemHandRenderer());
 
 		TintSourceTypes.ID_MAPPER.put(Glowcase.id("auto"), GlowcaseTintSource.CODEC);
+
+		WorldRenderEvents.AFTER_ENTITIES.register(BakedBlockEntityRenderer.Manager::render);
+		InvalidateRenderStateCallback.EVENT.register(BakedBlockEntityRenderer.Manager::reset);
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new NoteTextColorResource());
 
@@ -109,12 +110,12 @@ public class GlowcaseClient implements ClientModInitializer {
 			}
 		}));
 
-		if (EMI_LOADED) {
-			ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+//		if (EMI_LOADED) {
+//			ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 //				EmiWorldRenderUtils.disposeCache();
 //				EmiUtils.RECIPE_LIST.dispose();
-			});
-		}
+//			});
+//		}
 	}
 
 	/**

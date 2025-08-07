@@ -28,7 +28,7 @@ public class MixinHeldItemRenderer {
 		ci.cancel();
 	}
 
-	@ModifyExpressionValue(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z", ordinal = 0))
+	@ModifyExpressionValue(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;contains(Lnet/minecraft/component/ComponentType;)Z", ordinal = 0))
 	private boolean glowcase$enableFirstPersonTabletRendering(boolean original, AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack stack, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		@Nullable ItemHandRenderer renderer = ItemHandRenderer.getRenderer(stack);
 		return original || (renderer != null && renderer.visible(stack));

@@ -12,6 +12,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
  **/
 @Mixin(TextRenderer.class)
 public interface TextRendererAccessor {
-	@Invoker
-	FontStorage invokeGetFontStorage(Identifier id);
+	@Invoker FontStorage invokeGetFontStorage(Identifier id);
 }

@@ -35,10 +35,6 @@ import java.util.function.Consumer;
 public abstract class GlowcaseBlock extends BlockWithEntity {
 	protected static final VoxelShape HALF_CUBED = VoxelShapes.cuboid(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
 
-	public GlowcaseBlock() {
-		this(defaultSettings());
-	}
-
 	public GlowcaseBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
@@ -56,7 +52,9 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 	protected void loadClientSideNBT(World world, BlockPos pos, LivingEntity placer, ItemStack stack) {
 		if (world.isClient && placer instanceof PlayerEntity player && canEditGlowcase(player, pos)) {
 			NbtComponent blockEntityTag = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
-			if (blockEntityTag != null && world.getBlockEntity(pos) instanceof BlockEntity be) blockEntityTag.applyToBlockEntity(be, world.getRegistryManager());
+			if (blockEntityTag != null && world.getBlockEntity(pos) instanceof BlockEntity be) {
+				blockEntityTag.applyToBlockEntity(be, world.getRegistryManager());
+			}
 			openEditScreen(pos);
 		}
 	}
@@ -107,14 +105,18 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 		return expectedType == givenType ? (BlockEntityTicker<A>) ticker : null;
 	}
 
-	public static boolean canEditGlowcase(PlayerEntity player, BlockPos pos) {
-		if (player == null) return false;
+	public static boolean canEditGlowcase(@Nullable LivingEntity entity, BlockPos pos) {
+		if (entity == null) return false;
 
-		if (player.getWorld() instanceof ServerWorld serverWorld) {
-			return player.isCreative() && player.canModifyAt(serverWorld, pos);
+		if (entity instanceof PlayerEntity player) {
+			if (player.getWorld() instanceof ServerWorld serverWorld) {
+				return player.isCreative() && player.canModifyAt(serverWorld, pos);
+			}
+
+			return player.isCreative();
 		}
 
-		return player.isCreative();
+		return false;
 	}
 
 	@Deprecated
@@ -125,6 +127,7 @@ public abstract class GlowcaseBlock extends BlockWithEntity {
 		return Settings.create()
 			.nonOpaque()
 			.dropsNothing()
+			.noBlockBreakParticles()
 			.strength(-1, Float.MAX_VALUE);
 	}
 }

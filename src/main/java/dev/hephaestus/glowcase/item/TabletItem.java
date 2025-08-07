@@ -69,7 +69,7 @@ public class TabletItem extends Item {
 			screen.setImage(slide.getFirst(), slide.getSecond(), next_slide.getFirst());
 		} else
 			screen.setImage(slide.getFirst(), slide.getSecond(), null);
-		
+
 		return ActionResult.SUCCESS;
 	}
 

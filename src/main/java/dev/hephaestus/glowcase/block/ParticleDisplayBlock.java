@@ -25,10 +25,6 @@ import java.util.function.Consumer;
 public class ParticleDisplayBlock extends WaterloggableGlowcaseBlock {
 	public static final MapCodec<ParticleDisplayBlock> CODEC = createCodec(ParticleDisplayBlock::new);
 
-	public ParticleDisplayBlock() {
-		super();
-	}
-
 	public ParticleDisplayBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

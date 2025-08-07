@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.block.entity.SoundPlayerBlockEntity;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,10 +25,6 @@ import java.util.function.Consumer;
 
 public class SoundPlayerBlock extends WaterloggableGlowcaseBlock {
 	public static final MapCodec<SoundPlayerBlock> CODEC = createCodec(SoundPlayerBlock::new);
-
-	public SoundPlayerBlock() {
-		super();
-	}
 
 	public SoundPlayerBlock(AbstractBlock.Settings settings) {
 		super(settings);

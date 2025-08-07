@@ -54,6 +54,6 @@ public class ConfigLinkBlockEntity extends GlowcaseBlockEntity {
 	public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 		this.title = tag.getString("title", "");
-		this.url = tag.getString("url", "");
+		this.url = tag.getString("url", "glowcase:mod/modmenu");
 	}
 }

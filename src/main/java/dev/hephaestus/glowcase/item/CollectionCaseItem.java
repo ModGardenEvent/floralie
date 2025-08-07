@@ -88,7 +88,7 @@ public class CollectionCaseItem extends Item implements ScrollableItem {
 	@Override
 	public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
 		super.appendTooltip(stack, context, displayComponent, textConsumer, type);
-
+		
 		CollectionComponent collection = stack.get(Glowcase.COLLECTION_COMPONENT.get());
 		textConsumer.accept(Text.translatable("item.glowcase.collection_case.tooltip.0").formatted(Formatting.GRAY));
 		if (type.isCreative()) textConsumer.accept(Text.translatable("item.glowcase.collection_case.tooltip.creative.0").formatted(Formatting.DARK_GRAY));

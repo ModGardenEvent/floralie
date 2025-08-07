@@ -38,8 +38,9 @@ public class ScreenImageCache {
 	 * @param blockpos Only needed for logging to make it a bit easier to locate invalid screens.
 	 */
 	public ScreenTexture getImage(String address, @Nullable BlockPos blockpos) {
-		if (!cache.containsKey(address))
+		if (!cache.containsKey(address)) {
 			createImage(address, blockpos);
+		}
 
 		return cache.get(address);
 	}
@@ -169,8 +170,9 @@ public class ScreenImageCache {
 		private int height = 0;
 
 		public Pair<Integer, Identifier> getTexture() {
-			if (loader.isDone())
+			if (loader.isDone()) {
 				return new Pair<>(loader.join(), texture);
+			}
 
 			return new Pair<>(102, texture);
 		}
@@ -203,7 +205,8 @@ public class ScreenImageCache {
 
 					width = image.getWidth();
 					height = image.getHeight();
-				} catch (IOException ignored) { }
+				} catch (IOException ignored) {
+				}
 
 			this.texture = texture;
 			this.loader = CompletableFuture.completedFuture(200);
@@ -224,11 +227,10 @@ public class ScreenImageCache {
 					connection.connect();
 
 					int status = connection.getResponseCode();
-					if (status/100 != 2)
-						return status; // An actual status code for once here
+					if (status / 100 != 2) return status; // An actual status code for once here
 
 					stream = connection.getInputStream();
-				} catch (SocketTimeoutException e){
+				} catch (SocketTimeoutException e) {
 					return 408; // Request Timeout
 				} catch (Exception e) {
 					return 902; // Unable to create a connection

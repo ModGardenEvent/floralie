@@ -22,10 +22,6 @@ import java.util.function.Consumer;
 public class OutlineBlock extends WaterloggableGlowcaseBlock {
 	public static final MapCodec<OutlineBlock> CODEC = createCodec(OutlineBlock::new);
 
-	public OutlineBlock() {
-		super();
-	}
-
 	public OutlineBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

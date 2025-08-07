@@ -31,10 +31,6 @@ import java.util.function.Consumer;
 public class TextBlock extends RotatableBlock {
 	public static final MapCodec<TextBlock> CODEC = createCodec(TextBlock::new);
 
-	public TextBlock() {
-		super();
-	}
-
 	public TextBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}

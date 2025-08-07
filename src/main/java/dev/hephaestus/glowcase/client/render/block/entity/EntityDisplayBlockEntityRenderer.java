@@ -22,9 +22,6 @@ public record EntityDisplayBlockEntityRenderer(BlockEntityRendererFactory.Contex
 	@Override
 	public void render(EntityDisplayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
 		if (entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()).isAir()) return;
-		Entity camera = MinecraftClient.getInstance().getCameraEntity();
-
-		if (camera == null) return;
 
 		matrices.push();
 		matrices.translate(0.5D, 0D, 0.5D);

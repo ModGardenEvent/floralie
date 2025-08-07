@@ -63,44 +63,21 @@ public class TextBlockEntity extends GlowcaseBlockEntity {
 	protected void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(tag, registryLookup);
 
-		this.lines = new ArrayList<>();
-		tag.getFloat("scale").ifPresent(f -> this.scale = f);
-		tag.getInt("color").ifPresent(i -> this.color = i);
+		this.scale = tag.getFloat("scale", 1);
+		this.color = tag.getInt("color", 0xFFFFFFFF);
 
 		// Force-fix alpha of 0 to opaque.
 		if ((this.color & ColorUtil.ALPHA_MASK) == 0) {
 			this.color |= ColorUtil.ALPHA_MASK;
 		}
 
-		if (tag.contains("shadow_type")) {
-			switch (ShadowType.valueOf(String.valueOf(tag.getString("shadow_type")))) {
-				case NONE -> {
-					this.backgroundColor = 0;
-					this.shadow = false;
-				}
-				case PLATE -> {
-					this.backgroundColor = PLATE_BACKGROUND;
-					this.shadow = false;
-				}
-				default -> {
-					this.backgroundColor = 0;
-					this.shadow = true;
-				}
-			}
-		}
+		this.backgroundColor = tag.getInt("background_color", 0);
+		this.shadow = tag.getBoolean("shadow", true);
+		this.textAlignment = TextAlignment.valueOf(tag.getString("text_alignment", "0"));
+		this.zOffset = ZOffset.valueOf(tag.getString("z_offset", "0"));
+		this.viewDistance = tag.getFloat("viewDistance", -1.0F)
 
-		if (tag.contains("background_color")) {
-			tag.getInt("background_color").ifPresent(i -> this.backgroundColor = i);
-		}
-
-		if (tag.contains("shadow")) {
-			tag.getBoolean("shadow").ifPresent(b -> this.shadow = b);
-		}
-
-		this.textAlignment = TextAlignment.valueOf(tag.getString("text_alignment").orElse("0"));
-		this.zOffset = ZOffset.valueOf(tag.getString("z_offset").orElse("0"));
-		this.viewDistance = tag.contains("viewDistance") ? tag.getFloat("viewDistance").orElse(0.0F) : -1.0F;
-
+		this.lines = new ArrayList<>();
 		NbtList lines = tag.getListOrEmpty("lines");
 
 		for (NbtElement line : lines) {
@@ -146,16 +123,25 @@ public class TextBlockEntity extends GlowcaseBlockEntity {
 		}
 	}
 
-	public enum TextAlignment {
-		LEFT, CENTER, CENTER_LEFT, CENTER_RIGHT, RIGHT
+	public enum TextAlignment implements StringIdentifiable {
+		LEFT, CENTER, CENTER_LEFT, CENTER_RIGHT, RIGHT;
+
+		public static final Codec<TextAlignment> CODEC = StringIdentifiable.createCodec(TextAlignment::values);
+
+		@Override
+		public String asString() {
+			return name().toLowerCase();
+		}
 	}
 
-	public enum ZOffset {
-		FRONT, CENTER, BACK
-	}
+	public enum ZOffset implements StringIdentifiable {
+		FRONT, CENTER, BACK;
 
-	@Deprecated(forRemoval = true)
-	public enum ShadowType {
-		DROP, PLATE, NONE
+		public static final Codec<ZOffset> CODEC = StringIdentifiable.createCodec(ZOffset::values);
+
+		@Override
+		public String asString() {
+			return name().toLowerCase();
+		}
 	}
 }

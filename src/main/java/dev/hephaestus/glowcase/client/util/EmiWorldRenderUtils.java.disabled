@@ -2,11 +2,11 @@ package dev.hephaestus.glowcase.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
-import dev.emi.emi.api.EmiApi;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import dev.emi.emi.api.widget.Widget;
-import dev.emi.emi.widget.RecipeBackground;
+//import dev.emi.emi.api.EmiApi;
+//import dev.emi.emi.api.recipe.EmiRecipe;
+//import dev.emi.emi.api.recipe.EmiRecipeCategory;
+//import dev.emi.emi.api.widget.Widget;
+//import dev.emi.emi.widget.RecipeBackground;
 import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.client.GlowcaseClient;
 import net.minecraft.client.MinecraftClient;
@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmiWorldRenderUtils {
-	private static final BufferBuilderStorage SORRY = new BufferBuilderStorage(1);
+	/*private static final BufferBuilderStorage SORRY = new BufferBuilderStorage(1);
 	private static final Map<Vector2i, CachedBuffer> BACKGROUND_CACHE = new ConcurrentHashMap<>();
 	private static final Map<EmiRecipe, CachedBuffer> FRAMEBUFFER_CACHE = new ConcurrentHashMap<>();
 	private static final Map<EmiRecipe, GlowcaseWidgetHolder> HOLDER_CACHE = new ConcurrentHashMap<>();
@@ -267,7 +267,7 @@ public class EmiWorldRenderUtils {
 		Framebuffer framebuffer = cached.framebuffer;
 
 		try {
-			GlowcaseClient.PREVENT_VEIL_DYNAMIC_BUFFER.push(null);
+			//GlowcaseClient.PREVENT_VEIL_DYNAMIC_BUFFER.push(null);
 			framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
 			framebuffer.beginWrite(true);
 
@@ -327,9 +327,9 @@ public class EmiWorldRenderUtils {
 			// if an error occurs during framebuffer creation, mark the cache as dirty to refresh
 			cached.setDirty(true);
 		} finally {
-			GlowcaseClient.PREVENT_VEIL_DYNAMIC_BUFFER.pop();
+			//GlowcaseClient.PREVENT_VEIL_DYNAMIC_BUFFER.pop();
 		}
 
 		return framebuffer;
-	}
+	}*/
 }

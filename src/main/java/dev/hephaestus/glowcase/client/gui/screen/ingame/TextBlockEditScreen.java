@@ -242,23 +242,17 @@ public class TextBlockEditScreen extends TextEditorScreen {
 
 
 				int caretStartY = this.currentRow * 12;
-				int caretEndY = this.currentRow * 12 + 9;
-
-				int caretColor = 0xCCFFFFFF;
-
-				if (caretStart != caretEnd) {
-					int endX = startX + this.client.textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
-
-					context.fill(startX, caretStartY, endX, caretEndY, ColorHelper.getArgb(255, 224, 224,255));
-
-				}
-
 				if (this.ticksSinceOpened / 6 % 2 == 0 && !this.isFocusedTextActive()) {
 					if (selectionStart < line.length()) {
-						context.fill(startX, caretStartY, startX + 1, caretEndY, caretColor);
+						context.fill(startX, caretStartY, startX + 1, caretStartY + 9, 0xCCFFFFFF);
 					} else {
 						context.drawText(client.textRenderer, "_", startX, this.currentRow * 12, 0xFFFFFFFF, false);
 					}
+				}
+
+				if (caretStart != caretEnd) {
+					int endX = startX + this.client.textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
+					context.fill(startX, caretStartY, endX, caretEndY, ColorHelper.getArgb(255, 224, 224,255));
 				}
 			}
 
