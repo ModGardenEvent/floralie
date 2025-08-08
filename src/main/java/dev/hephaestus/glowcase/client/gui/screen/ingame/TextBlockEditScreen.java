@@ -392,7 +392,7 @@ public class TextBlockEditScreen extends TextEditorScreen {
 	}
 
 	private void colorListenerClicked(TextFieldWidget textWidget) {
-		this.colorPickerWidget.setPosition(textWidget.getX(), textWidget.getY() + textWidget.getHeight());
+		this.colorPickerWidget.setPosition(Math.min(textWidget.getX(), width - colorPickerWidget.getWidth()), textWidget.getY() + textWidget.getHeight());
 		this.colorPickerWidget.setTargetElement(textWidget);
 		this.colorPickerWidget.setOnAccept(null);
 		this.colorPickerWidget.setOnCancel(picker -> {
