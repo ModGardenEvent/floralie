@@ -149,7 +149,7 @@ public class TextBlockEntityRenderer extends BakedBlockEntityRenderer<TextBlockE
 				matrices.peek().getPositionMatrix(),
 				vertexConsumers,
 				TextRenderer.TextLayerType.NORMAL,
-				0,
+				entity.backgroundColor,
 				LightmapTextureManager.MAX_LIGHT_COORDINATE
 			);
 
