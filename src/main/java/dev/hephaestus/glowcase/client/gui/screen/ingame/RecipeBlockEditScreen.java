@@ -5,6 +5,7 @@ import com.google.common.primitives.Floats;
 import dev.hephaestus.glowcase.block.entity.RecipeBlockEntity;
 import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.GlowcaseClient;
+import dev.hephaestus.glowcase.client.gui.widget.ingame.GlowcaseTextFieldWidget;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.SuggestionListWidget;
 import dev.hephaestus.glowcase.packet.C2SEditRecipeBlock;
 import dev.hephaestus.glowcase.util.RequiresEmiLoaded;
@@ -53,7 +54,7 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 		}
 
 
-		this.recipeWidget = new TextFieldWidget(this.client.textRenderer, width / 2 - 150, baseY + 10, 300, 20, Text.empty());
+		this.recipeWidget = new GlowcaseTextFieldWidget(this.client.textRenderer, width / 2 - 150, baseY + 10, 300, 20, Text.empty());
 		this.recipeWidget.setMaxLength(1024);
 		this.recipeWidget.setText(recipeBlockEntity.recipe);
 
@@ -85,13 +86,7 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 			this.zOffsetToggle.setMessage(Text.literal(this.recipeBlockEntity.zOffset.name()));
 		}).dimensions(width / 2 - 75, baseY + fontHeight + 75, 150, 20).build();
 
-		suggestionWidget = new SuggestionListWidget<>(
-			this.client.textRenderer,
-			recipeWidget.getX(), recipeWidget.getY() + recipeWidget.getHeight() + 5, recipeWidget.getWidth(),
-			100, 10, 4, 5,
-			(suggestion) -> recipeWidget.setText(suggestion.toString()),
-			Identifier::toString
-		);
+		suggestionWidget = SuggestionListWidget.forTextField(recipeWidget, client.textRenderer, Identifier::toString);
 
 		recipeWidget.setChangedListener((text) -> {
 			if (Identifier.tryParse(this.recipeWidget.getText()) != null) {
@@ -175,7 +170,7 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 		if (suggestionWidget.isMouseOver(mouseX, mouseY) && recipeWidget.isFocused()) {
 			return suggestionWidget.mouseClicked(mouseX, mouseY, button);
 		} else {
-			suggestionWidget.updateSuggestions(NO_SUGGESTIONS, "");
+			suggestionWidget.updateSuggestions(NO_SUGGESTIONS, "", this);
 		}
 
 		return super.mouseClicked(mouseX, mouseY, button);
@@ -199,6 +194,14 @@ public class RecipeBlockEditScreen extends GlowcaseScreen {
 		}
 
 		return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (suggestionWidget.keyPressed(keyCode, scanCode, modifiers)) {
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override

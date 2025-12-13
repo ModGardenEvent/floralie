@@ -162,7 +162,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				}
 
 				layer.startDrawing();
-				try (
+				try {
 					RenderPass renderPass = RenderSystem.getDevice()
 						.createCommandEncoder()
 						.createRenderPass(
@@ -170,23 +170,20 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 							OptionalInt.empty(),
 							frameBuffer.useDepthAttachment ? frameBuffer.getDepthAttachment() : null,
 							OptionalDouble.empty()
-						)
-				) {
-					ChunkBuilder.Buffers buffer = layerBuffers.get(layer);
+						);
+					ChunkBuilder.Buffers buffers = layerBuffers.get(layer);
 
 					GpuBuffer indexBuffer;
 					VertexFormat.IndexType indexType;
-					if (buffer.getIndexBuffer() == null) {
+					if (buffers.getIndexBuffer() == null) {
 						RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
-						indexBuffer = shapeIndexBuffer.getIndexBuffer(buffer.getIndexCount());
+						indexBuffer = shapeIndexBuffer.getIndexBuffer(buffers.getIndexCount());
 						indexType = shapeIndexBuffer.getIndexType();
 					} else {
-						indexBuffer = buffer.getIndexBuffer();
-						indexType = buffer.getIndexType();
+						indexBuffer = buffers.getIndexBuffer();
+						indexType = buffers.getIndexType();
 					}
-					renderPass.setPipeline(pipeline);
-					renderPass.setVertexBuffer(0, buffer.getVertexBuffer());
-					renderPass.setIndexBuffer(indexBuffer, indexType);
+
 					if (RenderSystem.SCISSOR_STATE.isEnabled()) {
 						renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
 					}
@@ -197,7 +194,15 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 							renderPass.bindSampler("Sampler" + i, gpuTexture);
 						}
 					}
-					renderPass.drawIndexed(0, buffer.getIndexCount());
+
+					renderPass.setPipeline(pipeline);
+					renderPass.setVertexBuffer(0, buffers.getVertexBuffer());
+					renderPass.setIndexBuffer(indexBuffer, indexType);
+
+					renderPass.drawIndexed(0, buffers.getIndexCount());
+					renderPass.close();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
 				layer.endDrawing();
 				matrix4fStack.popMatrix();
@@ -240,8 +245,8 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 									RenderSystem.getDevice()
 										.createBuffer(
 											() -> "Glowcase Region index buffer - layer: " + layer.getName(),
-											BufferType.VERTICES,
-											BufferUsage.STATIC_WRITE,
+											BufferType.INDICES,
+											BufferUsage.STATIC_COPY,
 											byteBuffer
 										)
 								);

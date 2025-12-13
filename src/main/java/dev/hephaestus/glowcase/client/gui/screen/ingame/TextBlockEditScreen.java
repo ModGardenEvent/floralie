@@ -73,15 +73,17 @@ public class TextBlockEditScreen extends TextEditorScreen {
 			SelectionManager.makeClipboardSetter(this.client),
 			(string) -> true);
 
+		int middle = width / 2;
+
 		ButtonWidget decreaseSize = ButtonWidget.builder(Text.literal("-"), action -> {
 			this.textBlockEntity.scale = Math.max(0, this.textBlockEntity.scale - (Screen.hasShiftDown() ? 1F : 0.125F));
 			this.textBlockEntity.renderDirty = true;
-		}).dimensions(80, 0, 20, 20).build();
+		}).dimensions(middle - 130, 0, 20, 20).build();
 
 		ButtonWidget increaseSize = ButtonWidget.builder(Text.literal("+"), action -> {
 			this.textBlockEntity.scale += Screen.hasShiftDown() ? 1F : 0.125F;
 			this.textBlockEntity.renderDirty = true;
-		}).dimensions(100, 0, 20, 20).build();
+		}).dimensions(middle - 110, 0, 20, 20).build();
 
 		this.changeAlignment = ButtonWidget.builder(Text.stringifiedTranslatable("gui.glowcase.alignment", this.textBlockEntity.textAlignment), action -> {
 			switch (textBlockEntity.textAlignment) {
@@ -94,7 +96,7 @@ public class TextBlockEditScreen extends TextEditorScreen {
 			this.textBlockEntity.renderDirty = true;
 
 			this.changeAlignment.setMessage(Text.stringifiedTranslatable("gui.glowcase.alignment", this.textBlockEntity.textAlignment));
-		}).dimensions(120 + innerPadding, 0, 160, 20).build();
+		}).dimensions(middle - 90 + innerPadding, 0, 160, 20).build();
 
 		this.shadowToggle = CheckboxWidget.builder(Text.translatable("gui.glowcase.shadow"), this.textRenderer)
 			.checked(this.textBlockEntity.shadow)
@@ -102,9 +104,9 @@ public class TextBlockEditScreen extends TextEditorScreen {
 				this.textBlockEntity.shadow = checked;
 				this.textBlockEntity.renderDirty = true;
 			})
-			.pos(120 + innerPadding, 20 + innerPadding).build();
+			.pos(middle - 90 + innerPadding, 20 + innerPadding).build();
 
-		this.colorEntryWidget = new TextFieldWidget(this.client.textRenderer, 280 + innerPadding * 2, 0, 64, 20, Text.empty());
+		this.colorEntryWidget = new TextFieldWidget(this.client.textRenderer, middle + 70 + innerPadding * 2, 0, 64, 20, Text.empty());
 		this.colorEntryWidget.setTooltip(Tooltip.of(Text.translatable("gui.glowcase.color")));
 		this.colorEntryWidget.setText(ColorUtil.toAlphaHex(this.textBlockEntity.color));
 		this.colorEntryWidget.setChangedListener(string -> {
@@ -120,7 +122,7 @@ public class TextBlockEditScreen extends TextEditorScreen {
 			});
 		});
 
-		this.backgroundColorEntryWidget = new TextFieldWidget(this.client.textRenderer, 346 + innerPadding * 2, 0, 64, 20, Text.empty());
+		this.backgroundColorEntryWidget = new TextFieldWidget(this.client.textRenderer, middle + 136 + innerPadding * 2, 0, 64, 20, Text.empty());
 		this.backgroundColorEntryWidget.setTooltip(Tooltip.of(Text.translatable("gui.glowcase.background_color")));
 		this.backgroundColorEntryWidget.setText(ColorUtil.toAlphaHex(this.textBlockEntity.backgroundColor));
 		this.backgroundColorEntryWidget.setChangedListener(string -> {
@@ -142,12 +144,12 @@ public class TextBlockEditScreen extends TextEditorScreen {
 			this.textBlockEntity.renderDirty = true;
 
 			this.zOffsetToggle.setMessage(Text.literal(this.textBlockEntity.zOffset.name()));
-		}).dimensions(212, 20 + innerPadding, 72, 20).build();
+		}).dimensions(middle + 2, 20 + innerPadding, 72, 20).build();
 
 		this.colorPickerWidget = ColorPickerWidget.builder(this, 216, 10).size(182, 104).build();
 		this.colorPickerWidget.toggle(false); //start deactivated
 
-		this.viewDistanceField = new TextFieldWidget(this.client.textRenderer, 7, 20 + innerPadding, 83 + innerPadding, 20, Text.empty());
+		this.viewDistanceField = new TextFieldWidget(this.client.textRenderer, middle - 203, 20 + innerPadding, 83 + innerPadding, 20, Text.empty());
 		this.viewDistanceField.setText(String.valueOf(this.textBlockEntity.viewDistance));
 		this.viewDistanceField.setChangedListener(s -> {
 			if (Floats.tryParse(s) instanceof Float parsed) {
@@ -157,7 +159,7 @@ public class TextBlockEditScreen extends TextEditorScreen {
 		this.viewDistanceField.setTooltip(Tooltip.of(Text.translatable("gui.glowcase.screen.text_edit.view_distance")));
 		this.viewDistanceHelpButton = ButtonWidget.builder(Text.literal("?"), action -> {
 			})
-			.dimensions(7 + (83 + innerPadding) + 5, 20 + innerPadding, 20, 20).build();
+			.dimensions(middle - 115 + innerPadding + 5, 20 + innerPadding, 20, 20).build();
 		this.viewDistanceHelpButton.setTooltip(Tooltip.of(Text.translatable("gui.glowcase.screen.text_edit.view_distance")));
 
 		this.addDrawableChild(colorPickerWidget);
@@ -183,7 +185,7 @@ public class TextBlockEditScreen extends TextEditorScreen {
 			this.backgroundColorEntryWidget
 		);
 
-		addFormattingButtons(280, 20, innerPadding, 20, 2);
+		addFormattingButtons(middle + 70, 20, innerPadding, 20, 2);
 	}
 
 	@Override
@@ -254,12 +256,13 @@ public class TextBlockEditScreen extends TextEditorScreen {
 
 				if (caretStart != caretEnd) {
 					int endX = startX + this.client.textRenderer.getWidth(line.substring(selectionStart, selectionEnd));
-					context.fill(RenderLayer.getGuiTextHighlight(), startX, caretStartY, endX, caretStartY + 1, Colors.BLUE);
+					context.fill(RenderLayer.getGuiTextHighlight(), startX, caretStartY, endX, caretStartY + 9, Colors.BLUE);
 				}
 			}
 
 			context.getMatrices().pop();
 			context.drawTextWithShadow(client.textRenderer, Text.translatable("gui.glowcase.scale_value", this.textBlockEntity.scale), 7, 7, 0xFFFFFFFF);
+			colorPickerWidget.render(context, mouseX, mouseY, delta);
 		}
 	}
 

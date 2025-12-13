@@ -4,6 +4,7 @@ import dev.hephaestus.glowcase.Glowcase;
 import dev.hephaestus.glowcase.block.entity.TextBlockEntity;
 import dev.hephaestus.glowcase.client.util.BlockEntityRenderUtil;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.BakedGlyph;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -11,11 +12,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextVisitFactory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Quaternionf;
 
 public class TextBlockEntityRenderer extends BakedBlockEntityRenderer<TextBlockEntity> {
 	public static Identifier ITEM_TEXTURE = Glowcase.id("textures/item/text_block.png");
@@ -117,11 +119,14 @@ public class TextBlockEntityRenderer extends BakedBlockEntityRenderer<TextBlockE
 
 		matrices.translate(0, -((entity.lines.size() - 0.25) * 12) / 2D, 0D);
 		for (int i = 0; i < entity.lines.size(); ++i) {
-			double width = textRenderer.getWidth(entity.lines.get(i));
+			Text line = entity.lines.get(i);
+			double width = textRenderer.getWidth(line);
+			if (width == 0) continue;
+
 			double dX = switch (entity.textAlignment) {
 				case LEFT -> -maxLength / 2D;
 				case CENTER -> (maxLength - width) / 2D - maxLength / 2D;
-				case CENTER_LEFT -> - (50D / entity.scale) - (width / 2D);
+				case CENTER_LEFT -> -(50D / entity.scale) - (width / 2D);
 				case CENTER_RIGHT -> (50D / entity.scale) - (width / 2D);
 				case RIGHT -> maxLength - width - maxLength / 2D;
 			};
@@ -129,53 +134,33 @@ public class TextBlockEntityRenderer extends BakedBlockEntityRenderer<TextBlockE
 			matrices.push();
 			matrices.translate(dX, 0, 0);
 
-			if (entity.backgroundColor != 0 && width > 0) {
-				matrices.push();
-				// Annoyingly, it kept getting rendered backwards.
-				// I thought the vertexes were misordered but that didn't do anything.
-				matrices.multiply(new Quaternionf().rotateLocalY(MathHelper.PI));
-				matrices.translate(-width, 0, -0.025D);
-
-				//drawFillRect(matrices, vertexConsumers, (int) width + 5, (i + 1) * 12 - 2, -5, i * 12 - 2, entity.backgroundColor);
-				matrices.pop();
-			}
-
-			textRenderer.draw(
-				entity.lines.get(i),
-				0,
+			TextRenderer.Drawer drawer = textRenderer.new Drawer(
+				vertexConsumers,
+				0.0F,
 				i * 12,
 				entity.color,
 				entity.shadow,
 				matrices.peek().getPositionMatrix(),
-				vertexConsumers,
 				TextRenderer.TextLayerType.NORMAL,
-				entity.backgroundColor,
 				LightmapTextureManager.MAX_LIGHT_COORDINATE
 			);
 
+			// Yep, we're back to that hack again.
+			if (entity.backgroundColor != 0) {
+				final BakedGlyph.Rectangle rect = new BakedGlyph.Rectangle(
+					0.0F - 4, (i + 1) * 12 - 2f,
+					(float) width + 4, i * 12 - 2f,
+					-0.01F, entity.backgroundColor);
+
+				drawer.addRectangle(rect);
+			}
+
+			TextVisitFactory.visitFormatted(line, Style.EMPTY, drawer);
+			drawer.drawLayer(0.0F);
+
 			matrices.pop();
 		}
-
 		matrices.pop();
 	}
 
-	@SuppressWarnings("SameParameterValue")
-	private void drawFillRect(MatrixStack matrices, VertexConsumerProvider vcp, int x1, int y1, int x2, int y2, int color) {
-		float red = (float) (color >> 16 & 255) / 255.0F;
-		float green = (float) (color >> 8 & 255) / 255.0F;
-		float blue = (float) (color & 255) / 255.0F;
-		float alpha = (float) (color >> 24 & 255) / 255.0F;
-
-		// Horrible up to no good hack to get proper translucency sorting :3
-//		final BakedGlyph renderer = ((TextRendererAccessor) MinecraftClient.getInstance().textRenderer)
-//			.invokeGetFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
-//
-//		final RenderLayer renderLayer = renderer.getLayer(TextRenderer.TextLayerType.NORMAL);
-//		final VertexConsumer consumer = vcp.getBuffer(renderLayer);
-//		final Matrix4f matrix = matrices.peek().getPositionMatrix();
-//
-//		renderer.drawRectangle(new BakedGlyph.Rectangle(
-//			x1, y1, x2, y2, 0.2f, color
-//		), matrix, consumer, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-	}
 }

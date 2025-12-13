@@ -1,6 +1,7 @@
 package dev.hephaestus.glowcase.client.gui.screen.ingame;
 
 import dev.hephaestus.glowcase.block.entity.SoundPlayerBlockEntity;
+import dev.hephaestus.glowcase.client.gui.widget.ingame.GlowcaseTextFieldWidget;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.SuggestionListWidget;
 import dev.hephaestus.glowcase.client.gui.widget.ingame.Vec3FieldsWidget;
 import dev.hephaestus.glowcase.util.ParseUtil;
@@ -46,7 +47,7 @@ public class SoundPlayerBlockEditScreen extends GlowcaseScreen {
 		Objects.requireNonNull(this.client);
 //		RegistryWrapper.WrapperLookup lookup = Objects.requireNonNull(client.world).getRegistryManager();
 
-		this.soundId = new TextFieldWidget(
+		this.soundId = new GlowcaseTextFieldWidget(
 			this.client.textRenderer,
 			width / 10, height / 2 - 110,
 			8 * width / 10, 20,
@@ -126,8 +127,7 @@ public class SoundPlayerBlockEditScreen extends GlowcaseScreen {
 			.map(Identifier::toString)
 			.collect(Collectors.toList());
 
-		suggestionWidget = new SuggestionListWidget<>(this.client.textRenderer, soundId.getX(), soundId.getY() + soundId.getHeight() + 5, soundId.getWidth(), 100, 10, 4, 5,
-			(suggestion) -> soundId.setText(suggestion), s -> s);
+		suggestionWidget = SuggestionListWidget.forTextFieldWithStaticSuggestions(soundId, client.textRenderer, validSounds, Function.identity(), this);
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class SoundPlayerBlockEditScreen extends GlowcaseScreen {
 		if (suggestionWidget.isMouseOver(mouseX, mouseY) && soundId.isFocused()) {
 			return suggestionWidget.mouseClicked(mouseX, mouseY, button);
 		} else {
-			suggestionWidget.updateSuggestions(new ArrayList<>(), "");
+			suggestionWidget.updateSuggestions(new ArrayList<>(), "", this);
 		}
 
 		return super.mouseClicked(mouseX, mouseY, button);
@@ -223,6 +223,14 @@ public class SoundPlayerBlockEditScreen extends GlowcaseScreen {
 		}
 
 		return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (suggestionWidget.keyPressed(keyCode, scanCode, modifiers)) {
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
