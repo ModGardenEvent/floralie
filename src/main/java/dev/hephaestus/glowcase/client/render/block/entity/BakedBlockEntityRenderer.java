@@ -160,15 +160,15 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				}
 
 				layer.startDrawing();
-				try {
-					RenderPass renderPass = RenderSystem.getDevice()
-						.createCommandEncoder()
-						.createRenderPass(
-							frameBuffer.getColorAttachment(),
-							OptionalInt.empty(),
-							frameBuffer.useDepthAttachment ? frameBuffer.getDepthAttachment() : null,
-							OptionalDouble.empty()
-						);
+				try (RenderPass renderPass = RenderSystem.getDevice()
+					.createCommandEncoder()
+					.createRenderPass(
+						frameBuffer.getColorAttachment(),
+						OptionalInt.empty(),
+						frameBuffer.useDepthAttachment ? frameBuffer.getDepthAttachment() : null,
+						OptionalDouble.empty()
+					)
+				) {
 					ChunkBuilder.Buffers buffers = layerBuffers.get(layer);
 
 					GpuBuffer indexBuffer;
@@ -198,9 +198,6 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 					renderPass.setIndexBuffer(indexBuffer, indexType);
 
 					renderPass.drawIndexed(0, buffers.getIndexCount());
-					renderPass.close();
-				} catch (Exception e) {
-					throw new RuntimeException(e);
 				}
 				layer.endDrawing();
 				matrix4fStack.popMatrix();
