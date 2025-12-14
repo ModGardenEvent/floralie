@@ -34,9 +34,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
