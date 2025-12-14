@@ -158,6 +158,19 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 				} else {
 					pipeline = RenderPipelines.SOLID;
 				}
+				
+				ChunkBuilder.Buffers buffers = layerBuffers.get(layer);
+
+				GpuBuffer indexBuffer;
+				VertexFormat.IndexType indexType;
+				if (buffers.getIndexBuffer() == null) {
+					RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
+					indexBuffer = shapeIndexBuffer.getIndexBuffer(buffers.getIndexCount());
+					indexType = shapeIndexBuffer.getIndexType();
+				} else {
+					indexBuffer = buffers.getIndexBuffer();
+					indexType = buffers.getIndexType();
+				}
 
 				layer.startDrawing();
 				try (RenderPass renderPass = RenderSystem.getDevice()
@@ -167,20 +180,10 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 						OptionalInt.empty(),
 						frameBuffer.useDepthAttachment ? frameBuffer.getDepthAttachment() : null,
 						OptionalDouble.empty()
-					)
-				) {
-					ChunkBuilder.Buffers buffers = layerBuffers.get(layer);
+					)) {
 
-					GpuBuffer indexBuffer;
-					VertexFormat.IndexType indexType;
-					if (buffers.getIndexBuffer() == null) {
-						RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(layer.getDrawMode());
-						indexBuffer = shapeIndexBuffer.getIndexBuffer(buffers.getIndexCount());
-						indexType = shapeIndexBuffer.getIndexType();
-					} else {
-						indexBuffer = buffers.getIndexBuffer();
-						indexType = buffers.getIndexType();
-					}
+					renderPass.setPipeline(pipeline);
+					renderPass.setVertexBuffer(0, buffers.getVertexBuffer());
 
 					if (RenderSystem.SCISSOR_STATE.isEnabled()) {
 						renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
@@ -193,10 +196,7 @@ public abstract class BakedBlockEntityRenderer<T extends BlockEntity> implements
 						}
 					}
 
-					renderPass.setPipeline(pipeline);
-					renderPass.setVertexBuffer(0, buffers.getVertexBuffer());
 					renderPass.setIndexBuffer(indexBuffer, indexType);
-
 					renderPass.drawIndexed(0, buffers.getIndexCount());
 				}
 				layer.endDrawing();
